@@ -1,1 +1,14 @@
-<p>chart works!</p>
+
+
+    <div echarts
+         [options]="barOptions"
+         (chartClick)="onBarClick($event)"
+         class="chart"
+         style="height: 400px;">
+    </div>
+
+    <div *ngIf="showRadar" echarts
+         [options]="radarOptions"
+         class="chart"
+         style="height: 400px; margin-top: 40px;">
+    </div>

@@ -1,0 +1,6 @@
+[
+  { "name": "Data A", "Indicator1": 100, "Indicator2": 80, "Indicator3": 40, "Indicator4": 80, "Indicator5": 200, "Indicator6": 60 },
+  { "name": "Data B", "Indicator1": 60, "Indicator2": 50, "Indicator3": 30, "Indicator4": 100, "Indicator5": 150, "Indicator6": 30 },
+  { "name": "Data C", "Indicator1": 120, "Indicator2": 118, "Indicator3": 130, "Indicator4": 100, "Indicator5": 99, "Indicator6": 70 },
+  { "name": "Data D", "Indicator1": 100, "Indicator2": 93, "Indicator3": 50, "Indicator4": 90, "Indicator5": 70, "Indicator6": 60 }
+]
