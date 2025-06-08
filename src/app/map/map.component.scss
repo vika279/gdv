@@ -1,0 +1,66 @@
+.map-container {
+      position: relative;
+      width: 100%;
+      height: 600px;
+    }
+
+    .vector-map {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+    }
+
+    .map-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .control-btn {
+      background: white;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .control-btn:hover {
+      background: #f0f0f0;
+    }
+
+    /* Custom Leaflet Styles für saubere Vektorkarte */
+    :host ::ng-deep .leaflet-container {
+      background: #f8f9fa;
+    }
+
+    :host ::ng-deep .leaflet-control-container {
+      display: none; /* Verstecke Standard-Controls */
+    }
+
+    :host ::ng-deep .stadtteil-polygon {
+      stroke: #2c3e50;
+      stroke-width: 2;
+      fill: #3498db;
+      fill-opacity: 0.3;
+      transition: all 0.3s ease;
+    }
+
+    :host ::ng-deep .stadtteil-polygon:hover {
+      fill: #e74c3c;
+      fill-opacity: 0.6;
+      stroke-width: 3;
+    }
+
+    :host ::ng-deep .stadtteil-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      fill: #2c3e50;
+      text-anchor: middle;
+      pointer-events: none;
+    }

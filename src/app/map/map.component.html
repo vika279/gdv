@@ -1,0 +1,10 @@
+<p>map works!</p>
+   <div class="map-container">
+      <div #mapElement id="vector-map" class="vector-map"></div>
+      <div class="map-controls">
+        <button (click)="resetView()" class="control-btn">Zurücksetzen</button>
+        <button (click)="toggleLabels()" class="control-btn">
+          {{ showLabels ? 'Labels ausblenden' : 'Labels anzeigen' }}
+        </button>
+      </div>
+    </div>

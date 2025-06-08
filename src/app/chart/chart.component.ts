@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import * as echarts from 'echarts';
+import germanyMap from '../../assets/data/germany.json';
+
 
 @Component({
   selector: 'app-chart',
@@ -18,6 +21,10 @@ export class ChartComponent {
 
   constructor(private http: HttpClient) {
     this.loadData();
+  }
+
+  ngOnInit() {
+    echarts.registerMap('Germany', germanyMap as any);
   }
 
   loadData() {
@@ -84,4 +91,59 @@ export class ChartComponent {
     // Beispiel: maximaler Wert für jeden Indikator aus allen Daten
     return Math.max(...this.data.map(d => d[indicator] ?? 0)) * 1.2; // 20% Puffer
   }
+  loadMapChart(myChart: any) {
+  const populationData = [
+    { name: 'Berlin', value: 4090 },
+    { name: 'Bremen', value: 1680 },
+    { name: 'Hamburg', value: 2440 },
+    { name: 'Nordrhein-Westfalen', value: 530 },
+    { name: 'Saarland', value: 380 },
+    { name: 'Baden-Württemberg', value: 310 },
+    { name: 'Hessen', value: 300 },
+    { name: 'Sachsen', value: 220 },
+    { name: 'Rheinland-Pfalz', value: 210 },
+    { name: 'Schleswig-Holstein', value: 180 },
+    { name: 'Niedersachsen', value: 170 },
+    { name: 'Thüringen', value: 130 },
+    { name: 'Brandenburg', value: 85 },
+    { name: 'Sachsen-Anhalt', value: 110 },
+    { name: 'Bayern', value: 180 },
+    { name: 'Mecklenburg-Vorpommern', value: 70 }
+  ];
+
+  myChart.setOption({
+    title: {
+      text: 'Bevölkerungsdichte in Deutschland (2025)',
+      subtext: 'Datenquelle: Statistisches Bundesamt',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{b}<br/>{c} Einwohner/km²'
+    },
+    visualMap: {
+      min: 50,
+      max: 4500,
+      left: 'left',
+      top: 'bottom',
+      text: ['Hoch', 'Niedrig'],
+      calculable: true,
+      inRange: {
+        color: ['#e0f3f8', '#abd9e9', '#74add1', '#4575b4']
+      }
+    },
+    series: [
+      {
+        name: 'Bevölkerungsdichte',
+        type: 'map',
+        map: 'Germany',
+        roam: true,
+        label: {
+          show: true
+        },
+        data: populationData
+      }
+    ]
+  });
+}
 }
