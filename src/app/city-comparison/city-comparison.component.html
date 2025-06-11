@@ -1,0 +1,94 @@
+<div class="city-comparison-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Städtevergleich: Mannheim vs Kaiserslautern</h1>
+    <div class="category-selector">
+      <label for="category-select">Kategorie auswählen:</label>
+      <select id="category-select" (change)="onCategoryChange($event)">
+        <option value="Kita">Kita</option>
+        <option value="Grundschule">Grundschule</option>
+        <option value="Spielplätze">Spielplätze</option>
+        <option value="Kinderärzte">Kinderärzte</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="main-grid">
+    <!-- Radar Chart -->
+    <div class="chart-container radar-container">
+      <div #radarChart class="chart radar-chart"></div>
+
+      <!-- Legend Table -->
+      <div class="legend-table">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Kita</th>
+              <th>Grundschule</th>
+              <th>Spielplätze</th>
+              <th>Kinderärzte</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="city-name mannheim">Mannheim</td>
+              <td>{{ cityData[0].categories.kita }}</td>
+              <td>{{ cityData[0].categories.grundschule }}</td>
+              <td>{{ cityData[0].categories.spielplaetze }}</td>
+              <td>{{ cityData[0].categories.kinderaerzte }}</td>
+            </tr>
+            <tr>
+              <td class="city-name kaiserslautern">Kaiserslautern</td>
+              <td>{{ cityData[1].categories.kita }}</td>
+              <td>{{ cityData[1].categories.grundschule }}</td>
+              <td>{{ cityData[1].categories.spielplaetze }}</td>
+              <td>{{ cityData[1].categories.kinderaerzte }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mannheim Section -->
+    <div class="city-section mannheim-section">
+      <div class="chart-container">
+        <div #mannheimBarChart class="chart bar-chart"></div>
+      </div>
+      <div class="map-container">
+        <div #mannheimMap class="map"></div>
+      </div>
+    </div>
+
+    <!-- Kaiserslautern Section -->
+    <div class="city-section kaiserslautern-section">
+      <div class="chart-container">
+        <div #kaiserslauternBarChart class="chart bar-chart"></div>
+      </div>
+      <div class="map-container">
+        <div #kaiserslauternMap class="map"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="bottom-legend">
+    <div class="legend-item">
+      <span class="legend-color kita"></span>
+      <span>Kita</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color grundschule"></span>
+      <span>Grundschule</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color spielplaetze"></span>
+      <span>Spielplätze</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color kinderaerzte"></span>
+      <span>Kinderärzte</span>
+    </div>
+  </div>
+</div>
