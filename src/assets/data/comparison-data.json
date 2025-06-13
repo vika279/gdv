@@ -1,0 +1,10 @@
+{
+  "Mannheim": {
+    "Innenstadt-Ost": { "kita": 5, "grundschule": 3, "spielplatz": 7, "kinderarzt": 4 },
+    "Neckarstadt": { "kita": 4, "grundschule": 4, "spielplatz": 6, "kinderarzt": 3 }
+  },
+  "Kaiserslautern": {
+    "Innenstadt-Ost": { "kita": 3, "grundschule": 2, "spielplatz": 5, "kinderarzt": 2 },
+    "West": { "kita": 2, "grundschule": 2, "spielplatz": 4, "kinderarzt": 1 }
+  }
+}
