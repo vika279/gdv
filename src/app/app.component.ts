@@ -121,10 +121,10 @@ export interface Facility {
   `,
   styles: [`
     .app-container {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      // min-height: 100vh;
+      // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      // padding: 20px;
+      // font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .header {
@@ -147,7 +147,7 @@ export interface Facility {
     }
 
     .main-content {
-      max-width: 1400px;
+      // max-width: 1400px;
       margin: 0 auto;
     }
 
