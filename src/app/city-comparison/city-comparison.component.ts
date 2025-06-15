@@ -335,7 +335,7 @@ interface CityData {
   `,
   styles: [`
     .city-comparison-container {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
       background: #f8f9fa;
       min-height: 100vh;
     }
@@ -659,7 +659,7 @@ interface CityData {
     }
 
     .star {
-      color: #ddd;
+      // color: #ddd;
       font-size: 1.2rem;
     }
 
