@@ -245,6 +245,10 @@ declare var L: any;
     :host ::ng-deep .leaflet-control-zoom {
       display: none !important;
     }
+     :host ::ng-deep .leaflet-container {
+    background: white !important;
+    outline-offset: 1px;
+  }
 
     :host ::ng-deep .leaflet-control-attribution {
       font-size: 10px !important;
