@@ -34,8 +34,8 @@ export interface Facility {
   template: `
     <div class="app-container">
       <header class="header">
-        <h1>Kinderfreundlichkeits-Vergleich: Mannheim vs. Kaiserslautern</h1>
-        <p class="subtitle">Interaktive Analyse kindgerechter Infrastruktur für Kinder im Alter von 0-10 Jahren</p>
+        <!-- <h1>Kinderfreundlichkeits-Vergleich: Mannheim vs. Kaiserslautern</h1>
+        <p class="subtitle">Interaktive Analyse kindgerechter Infrastruktur für Kinder im Alter von 0-10 Jahren</p> -->
       </header>
 
       <div class="main-content">
@@ -90,7 +90,7 @@ export interface Facility {
           </div>
         </div>
 
-        <!-- Legende -->
+        <!--
         <div class="legend">
           <h3>Index-Skala</h3>
           <div class="legend-items">
@@ -115,7 +115,7 @@ export interface Facility {
               <span class="legend-label">Sehr hoch</span>
             </div>
           </div>
-        </div>
+        </div> Legende -->
       </div>
     </div>
   `,
