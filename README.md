@@ -25,3 +25,12 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Usage of Docker Container
+For using Docker Images and Container it requiers you to have Docker\Docker Desktop installed.  
+Build the Image with `docker build -t angular-geojson .`.
+run the Container `docker run -p 8080:80 angular-geojson`.
+You should now be able to reach the Webside at `Localhost:8080`. Change the Port if you need it.
+
+## Note for the Usage of Docker
+While using Docker Container has its advantiges, you will not be able to use in Chapter: `Development Server` descripted auto update function easily, since it would requier you to change the Documents in the Image. 
