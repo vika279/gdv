@@ -2,25 +2,22 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { District } from '../app.component';
 
-
 @Component({
   selector: 'app-comparison-table',
   standalone: true,
   imports: [CommonModule],
   template: `
-      {{kaiserslauternDistrict| json}}
-    <div class="table-container" *ngIf="mannheimDistrict && kaiserslauternDistrict">
-
+    <div class="table-container">
       <table class="comparison-table">
         <thead>
           <tr>
             <th class="indicator-column">Indikator</th>
             <th class="city-column mannheim">
-              {{ mannheimDistrict.name }}
+              {{ displayMannheimDistrict.name }}
               <div class="city-label">Mannheim</div>
             </th>
             <th class="city-column kaiserslautern">
-              {{ kaiserslauternDistrict.name }}
+              {{ displayKaiserslauternDistrict.name }}
               <div class="city-label">Kaiserslautern</div>
             </th>
             <th class="difference-column">Differenz</th>
@@ -32,8 +29,8 @@ import { District } from '../app.component';
               <span class="icon">🏠</span>
               <span>Kindertagesstätten</span>
             </td>
-            <td class="value mannheim">{{ mannheimDistrict.kitas }}</td>
-            <td class="value kaiserslautern">{{ kaiserslauternDistrict.kitas }}</td>
+            <td class="value mannheim">{{ displayMannheimDistrict.kitas }}</td>
+            <td class="value kaiserslautern">{{ displayKaiserslauternDistrict.kitas }}</td>
             <td class="difference" [ngClass]="getDifferenceClass('kitas')">
               {{ getDifference('kitas') }}
               <span class="difference-indicator">{{ getDifferenceIndicator('kitas') }}</span>
@@ -45,8 +42,8 @@ import { District } from '../app.component';
               <span class="icon">🏫</span>
               <span>Grundschulen</span>
             </td>
-            <td class="value mannheim">{{ mannheimDistrict.grundschulen }}</td>
-            <td class="value kaiserslautern">{{ kaiserslauternDistrict.grundschulen }}</td>
+            <td class="value mannheim">{{ displayMannheimDistrict.grundschulen }}</td>
+            <td class="value kaiserslautern">{{ displayKaiserslauternDistrict.grundschulen }}</td>
             <td class="difference" [ngClass]="getDifferenceClass('grundschulen')">
               {{ getDifference('grundschulen') }}
               <span class="difference-indicator">{{ getDifferenceIndicator('grundschulen') }}</span>
@@ -58,8 +55,8 @@ import { District } from '../app.component';
               <span class="icon">⚕️</span>
               <span>Kinderärzte</span>
             </td>
-            <td class="value mannheim">{{ mannheimDistrict.kinderaerzte }}</td>
-            <td class="value kaiserslautern">{{ kaiserslauternDistrict.kinderaerzte }}</td>
+            <td class="value mannheim">{{ displayMannheimDistrict.kinderaerzte }}</td>
+            <td class="value kaiserslautern">{{ displayKaiserslauternDistrict.kinderaerzte }}</td>
             <td class="difference" [ngClass]="getDifferenceClass('kinderaerzte')">
               {{ getDifference('kinderaerzte') }}
               <span class="difference-indicator">{{ getDifferenceIndicator('kinderaerzte') }}</span>
@@ -71,8 +68,8 @@ import { District } from '../app.component';
               <span class="icon">🛝</span>
               <span>Spielplätze</span>
             </td>
-            <td class="value mannheim">{{ mannheimDistrict.spielplaetze }}</td>
-            <td class="value kaiserslautern">{{ kaiserslauternDistrict.spielplaetze }}</td>
+            <td class="value mannheim">{{ displayMannheimDistrict.spielplaetze }}</td>
+            <td class="value kaiserslautern">{{ displayKaiserslauternDistrict.spielplaetze }}</td>
             <td class="difference" [ngClass]="getDifferenceClass('spielplaetze')">
               {{ getDifference('spielplaetze') }}
               <span class="difference-indicator">{{ getDifferenceIndicator('spielplaetze') }}</span>
@@ -84,8 +81,8 @@ import { District } from '../app.component';
               <span class="icon">👶</span>
               <span>Kinderanteil (0-10 Jahre)</span>
             </td>
-            <td class="value mannheim">{{ mannheimDistrict.kinderanteil }}%</td>
-            <td class="value kaiserslautern">{{ kaiserslauternDistrict.kinderanteil }}%</td>
+            <td class="value mannheim">{{ displayMannheimDistrict.kinderanteil }}%</td>
+            <td class="value kaiserslautern">{{ displayKaiserslauternDistrict.kinderanteil }}%</td>
             <td class="difference" [ngClass]="getDifferenceClass('kinderanteil')">
               {{ getDifference('kinderanteil') }}%
               <span class="difference-indicator">{{ getDifferenceIndicator('kinderanteil') }}</span>
@@ -99,10 +96,10 @@ import { District } from '../app.component';
               <span><strong>Gesamtindex</strong></span>
             </td>
             <td class="value mannheim index-value">
-              <span class="index-score">{{ mannheimDistrict.index }}/5</span>
+              <span class="index-score">{{ displayMannheimDistrict.index }}/5</span>
             </td>
             <td class="value kaiserslautern index-value">
-              <span class="index-score">{{ kaiserslauternDistrict.index }}/5</span>
+              <span class="index-score">{{ displayKaiserslauternDistrict.index }}/5</span>
             </td>
             <td class="difference index-difference" [ngClass]="getDifferenceClass('index')">
               {{ getDifference('index') }}
@@ -114,20 +111,20 @@ import { District } from '../app.component';
 
       <div class="summary-stats">
         <div class="stat-card mannheim">
-          <h4>{{ mannheimDistrict.name }}</h4>
-          <div class="stat-value">{{ mannheimDistrict.index }}/5</div>
+          <h4>{{ displayMannheimDistrict.name }}</h4>
+          <div class="stat-value">{{ displayMannheimDistrict.index }}/5</div>
           <div class="stat-label">Kinderfreundlichkeit</div>
           <div class="stat-details">
-            <span>{{ getTotalFacilities(mannheimDistrict) }} Einrichtungen</span>
+            <span>{{ getTotalFacilities(displayMannheimDistrict) }} Einrichtungen</span>
           </div>
         </div>
 
         <div class="stat-card kaiserslautern">
-          <h4>{{ kaiserslauternDistrict.name }}</h4>
-          <div class="stat-value">{{ kaiserslauternDistrict.index }}/5</div>
+          <h4>{{ displayKaiserslauternDistrict.name }}</h4>
+          <div class="stat-value">{{ displayKaiserslauternDistrict.index }}/5</div>
           <div class="stat-label">Kinderfreundlichkeit</div>
           <div class="stat-details">
-            <span>{{ getTotalFacilities(kaiserslauternDistrict) }} Einrichtungen</span>
+            <span>{{ getTotalFacilities(displayKaiserslauternDistrict) }} Einrichtungen</span>
           </div>
         </div>
       </div>
@@ -360,27 +357,81 @@ export class ComparisonTableComponent {
   @Input() mannheimDistrict: District | null = null;
   @Input() kaiserslauternDistrict: District | null = null;
 
-  getDifference(indicator: keyof District): string {
-    if (!this.mannheimDistrict || !this.kaiserslauternDistrict) return '0';
+  // Default-Werte für Gesamtdaten
+  private defaultMannheimDistrict: District = {
+    name: 'Gesamt',
+    kitas: 23,
+    grundschulen: 1,
+    kinderaerzte: 2,
+    spielplaetze: 2,
+    kinderanteil: 0.13,
+    index: 2.1,
+    id: '',
+    city: '',
+ coordinates: [49.4875, 8.4660],
+    color: '',
+    kitasIndex: 0,
+    grundschulenIndex: 0,
+    kinderaerzteIndex: 0,
+    spielplaetzeIndex: 0,
+    gesamt_kinder: 0,
+    kinder_0_6: 0,
+    kinder_6_10: 0,
+    kinderanteilIndex: 0,
+    gesamt_Einwohner: 0,
+    avg_index: 0
+  };
 
-    const mannheimValue = this.mannheimDistrict[indicator] as number;
-    const kaiserslauternValue = this.kaiserslauternDistrict[indicator] as number;
+  private defaultKaiserslauternDistrict: District = {
+    name: 'Gesamt',
+    kitas: 9,
+    grundschulen: 2,
+    kinderaerzte: 3,
+    spielplaetze: 0,
+    kinderanteil: 0.05,
+    index: 1.4,
+    id: '',
+    city: '',
+  coordinates: [49.4401, 7.7491],
+    color: '',
+    kitasIndex: 0,
+    grundschulenIndex: 0,
+    kinderaerzteIndex: 0,
+    spielplaetzeIndex: 0,
+    gesamt_kinder: 0,
+    kinder_0_6: 0,
+    kinder_6_10: 0,
+    kinderanteilIndex: 0,
+    gesamt_Einwohner: 0,
+    avg_index: 0
+  };
+
+  // Getter für die anzuzeigenden Daten
+  get displayMannheimDistrict(): District {
+    return this.mannheimDistrict || this.defaultMannheimDistrict;
+  }
+
+  get displayKaiserslauternDistrict(): District {
+    return this.kaiserslauternDistrict || this.defaultKaiserslauternDistrict;
+  }
+
+  getDifference(indicator: keyof District): string {
+    const mannheimValue = this.displayMannheimDistrict[indicator] as number;
+    const kaiserslauternValue = this.displayKaiserslauternDistrict[indicator] as number;
     const diff = mannheimValue - kaiserslauternValue;
 
     if (diff > 0) {
-      return `+${diff.toFixed(indicator === 'kinderanteil' ? 1 : 0)}`;
+      return `+${diff.toFixed(indicator === 'kinderanteil' ? 2 : 0)}`;
     } else if (diff < 0) {
-      return diff.toFixed(indicator === 'kinderanteil' ? 1 : 0);
+      return diff.toFixed(indicator === 'kinderanteil' ? 2 : 0);
     } else {
       return '0';
     }
   }
 
   getDifferenceClass(indicator: keyof District): string {
-    if (!this.mannheimDistrict || !this.kaiserslauternDistrict) return 'neutral';
-
-    const mannheimValue = this.mannheimDistrict[indicator] as number;
-    const kaiserslauternValue = this.kaiserslauternDistrict[indicator] as number;
+    const mannheimValue = this.displayMannheimDistrict[indicator] as number;
+    const kaiserslauternValue = this.displayKaiserslauternDistrict[indicator] as number;
     const diff = mannheimValue - kaiserslauternValue;
 
     if (diff > 0) return 'positive';
@@ -389,10 +440,8 @@ export class ComparisonTableComponent {
   }
 
   getDifferenceIndicator(indicator: keyof District): string {
-    if (!this.mannheimDistrict || !this.kaiserslauternDistrict) return '=';
-
-    const mannheimValue = this.mannheimDistrict[indicator] as number;
-    const kaiserslauternValue = this.kaiserslauternDistrict[indicator] as number;
+    const mannheimValue = this.displayMannheimDistrict[indicator] as number;
+    const kaiserslauternValue = this.displayKaiserslauternDistrict[indicator] as number;
     const diff = mannheimValue - kaiserslauternValue;
 
     if (diff > 0) return '↑';
