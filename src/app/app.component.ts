@@ -24,6 +24,8 @@ export interface District {
   gesamt_kinder: number;
   kinder_0_6: number;
   kinder_6_10: number;
+    kinderanteilIndex: number;
+  gesamt_Einwohner: number;
   avg_index: number;
 }
 
@@ -45,6 +47,7 @@ export interface Facility {
         <!-- <h1>Kinderfreundlichkeits-Vergleich: Mannheim vs. Kaiserslautern</h1>
         <p class="subtitle">Interaktive Analyse kindgerechter Infrastruktur für Kinder im Alter von 0-10 Jahren</p> -->
       </header>
+
 
       <div class="main-content">
         <!-- Karten-Vergleich -->
@@ -427,7 +430,7 @@ Kaiserslautern;Gesamt;8,888888889;2,230555556;2,530555556;0,333333333;0,04666666
         city: city,
         coordinates: coordinates,
         kitas: row['Kita_Plätze'] || 0,
-        grundschulen: Math.round(row['Grundschule_plätze'] / 100) || 0, // Estimate school count
+        grundschulen: row['Grundschule_plätze'] || 0,
         kinderaerzte: row['Anzahl_Kinderärzte'] || 0,
         spielplaetze: row['Anzahl_Spielplätze'] || 0,
         kinderanteil: row['%0-10'] || 0,
@@ -441,6 +444,8 @@ Kaiserslautern;Gesamt;8,888888889;2,230555556;2,530555556;0,333333333;0,04666666
         gesamt_kinder: row['gesamt_Kinder'] || 0,
         kinder_0_6: row['0-6'] || 0,
         kinder_6_10: row['6 bis 10'] || 0,
+     kinderanteilIndex: row['Index_%0-10'] || 0,
+        gesamt_Einwohner: row['gesamt_Einwohner']|| 0,
         avg_index: row['AVG'] || 0
       };
     });

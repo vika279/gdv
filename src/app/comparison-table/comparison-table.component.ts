@@ -8,7 +8,9 @@ import { District } from '../app.component';
   standalone: true,
   imports: [CommonModule],
   template: `
+      {{kaiserslauternDistrict| json}}
     <div class="table-container" *ngIf="mannheimDistrict && kaiserslauternDistrict">
+
       <table class="comparison-table">
         <thead>
           <tr>

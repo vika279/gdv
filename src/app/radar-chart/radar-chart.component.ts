@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, OnDestroy, PLATFORM_ID, Inject, ElementRef, ViewChild } from '@angular/core';
+ import { Component, Input, OnInit, OnChanges, OnDestroy, PLATFORM_ID, Inject, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { District } from '../app.component';
 
@@ -95,6 +95,9 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
     if (this.isClient) {
       this.loadECharts();
     }
+    console.log(this.kaiserslauternDistrict)
+    console.log( this.kaiserslauternDistrict?.index)
+
   }
 
   ngOnChanges() {
@@ -143,149 +146,149 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.chart || !this.mannheimDistrict || !this.kaiserslauternDistrict) return;
 
     // Normalisierte Werte für bessere Vergleichbarkeit im Radar Chart
-    const normalizeValue = (value: number, min: number, max: number): number => {
-      return ((value - min) / (max - min)) * 100;
-    };
+    // const normalizeValue = (value: number, min: number, max: number): number => {
+    //   return ((value - min) / (max - min)) * 100;
+    // };
 
     // Min/Max Werte für Normalisierung (basierend auf allen Stadtteilen)
-    const ranges = {
-      kitas: { min: 4, max: 15 },
-      grundschulen: { min: 1, max: 5 },
-      kinderaerzte: { min: 2, max: 8 },
-      spielplaetze: { min: 5, max: 22 },
-      kinderanteil: { min: 6.5, max: 14.2 }
-    };
+    // const ranges = {
+    //   kitas: { min: 4, max: 15 },
+    //   grundschulen: { min: 1, max: 5 },
+    //   kinderaerzte: { min: 2, max: 8 },
+    //   spielplaetze: { min: 5, max: 22 },
+    //   kinderanteil: { min: 6.5, max: 14.2 }
+    // };
 
     const mannheimData = [
-      normalizeValue(this.mannheimDistrict.kitas, ranges.kitas.min, ranges.kitas.max),
-      normalizeValue(this.mannheimDistrict.grundschulen, ranges.grundschulen.min, ranges.grundschulen.max),
-      normalizeValue(this.mannheimDistrict.kinderaerzte, ranges.kinderaerzte.min, ranges.kinderaerzte.max),
-      normalizeValue(this.mannheimDistrict.spielplaetze, ranges.spielplaetze.min, ranges.spielplaetze.max),
-      normalizeValue(this.mannheimDistrict.kinderanteil, ranges.kinderanteil.min, ranges.kinderanteil.max)
+      this.kaiserslauternDistrict?.kitasIndex,
+      this.kaiserslauternDistrict?.grundschulenIndex,
+      this.kaiserslauternDistrict?.kinderaerzteIndex,
+       this.kaiserslauternDistrict?.spielplaetzeIndex,
+      this.kaiserslauternDistrict?.kinderanteilIndex
     ];
 
     const kaiserslauternData = [
-      normalizeValue(this.kaiserslauternDistrict.kitas, ranges.kitas.min, ranges.kitas.max),
-      normalizeValue(this.kaiserslauternDistrict.grundschulen, ranges.grundschulen.min, ranges.grundschulen.max),
-      normalizeValue(this.kaiserslauternDistrict.kinderaerzte, ranges.kinderaerzte.min, ranges.kinderaerzte.max),
-      normalizeValue(this.kaiserslauternDistrict.spielplaetze, ranges.spielplaetze.min, ranges.spielplaetze.max),
-      normalizeValue(this.kaiserslauternDistrict.kinderanteil, ranges.kinderanteil.min, ranges.kinderanteil.max)
+      this.mannheimDistrict?.kitasIndex,
+      this.mannheimDistrict?.grundschulenIndex,
+      this.mannheimDistrict?.kinderaerzteIndex,
+       this.mannheimDistrict?.spielplaetzeIndex,
+      this.mannheimDistrict?.kinderanteilIndex
     ];
 
     const option = {
-      title: {
-        text: 'Kinderfreundlichkeits-Indikatoren',
-        left: 'center',
+    title: {
+      text: 'Kinderfreundlichkeits-Indikatoren',
+      left: 'center',
+      textStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333'
+      }
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: (params: any) => {
+        const district = params.seriesName === 'Mannheim' ? this.mannheimDistrict : this.kaiserslauternDistrict;
+        const indicators = ['Kitas', 'Grundschulen', 'Kinderärzte', 'Spielplätze', 'Kinderanteil'];
+        const values = [
+          district?.kitas,
+          district?.grundschulen,
+          district?.kinderaerzte,
+          district?.spielplaetze,
+          district?.kinderanteil + '%'
+        ];
+
+        return `
+          <strong>${params.seriesName}: ${district?.name}</strong><br/>
+          ${indicators[params.dataIndex]}: ${values[params.dataIndex]}<br/>
+          <em>Index-Wert: ${params.value.toFixed(1)}</em>
+        `;
+      }
+    },
+    legend: {
+      show: false
+    },
+    radar: {
+      center: ['50%', '55%'],
+      radius: '65%',
+      indicator: [
+        { name: 'Kitas', max: 5, color: '#666' },
+        { name: 'Grundschulen', max: 5, color: '#666' },
+        { name: 'Kinderärzte', max: 5, color: '#666' },
+        { name: 'Spielplätze', max: 5, color: '#666' },
+        { name: 'Kinderanteil\n(0-10 Jahre)', max: 5, color: '#666' }
+      ],
+      name: {
         textStyle: {
-          fontSize: 16,
-          fontWeight: 'bold',
-          color: '#333'
+          fontSize: 12,
+          color: '#666',
+          fontWeight: 'bold'
         }
       },
-      tooltip: {
-        trigger: 'item',
-        formatter: (params: any) => {
-          const district = params.seriesName === 'Mannheim' ? this.mannheimDistrict : this.kaiserslauternDistrict;
-          const indicators = ['Kitas', 'Grundschulen', 'Kinderärzte', 'Spielplätze', 'Kinderanteil'];
-          const values = [
-            district?.kitas,
-            district?.grundschulen,
-            district?.kinderaerzte,
-            district?.spielplaetze,
-            district?.kinderanteil + '%'
-          ];
-
-          return `
-            <strong>${params.seriesName}: ${district?.name}</strong><br/>
-            ${indicators[params.dataIndex]}: ${values[params.dataIndex]}<br/>
-            <em>Normalisiert: ${params.value.toFixed(1)}%</em>
-          `;
+      splitArea: {
+        areaStyle: {
+          color: ['rgba(114, 172, 209, 0.1)', 'rgba(114, 172, 209, 0.05)']
         }
       },
-      legend: {
-        show: false
-      },
-      radar: {
-        center: ['50%', '55%'],
-        radius: '65%',
-        indicator: [
-          { name: 'Kitas', max: 100, color: '#666' },
-          { name: 'Grundschulen', max: 100, color: '#666' },
-          { name: 'Kinderärzte', max: 100, color: '#666' },
-          { name: 'Spielplätze', max: 100, color: '#666' },
-          { name: 'Kinderanteil\n(0-10 Jahre)', max: 100, color: '#666' }
-        ],
-        name: {
-          textStyle: {
-            fontSize: 12,
-            color: '#666',
-            fontWeight: 'bold'
-          }
-        },
-        splitArea: {
-          areaStyle: {
-            color: ['rgba(114, 172, 209, 0.1)', 'rgba(114, 172, 209, 0.05)']
-          }
-        },
-        splitLine: {
-          lineStyle: {
-            color: 'rgba(114, 172, 209, 0.3)'
-          }
-        },
-        axisLine: {
-          lineStyle: {
-            color: 'rgba(114, 172, 209, 0.5)'
-          }
+      splitLine: {
+        lineStyle: {
+          color: 'rgba(114, 172, 209, 0.3)'
         }
       },
-      series: [
-        {
-          name: 'Mannheim',
-          type: 'radar',
-          data: [
-            {
-              value: mannheimData,
-              name: this.mannheimDistrict.name,
-              areaStyle: {
-                color: 'rgba(102, 126, 234, 0.2)'
-              },
-              lineStyle: {
-                color: '#667eea',
-                width: 3
-              },
-              itemStyle: {
-                color: '#667eea',
-                borderColor: '#667eea',
-                borderWidth: 2
-              }
+      axisLine: {
+        lineStyle: {
+          color: 'rgba(114, 172, 209, 0.5)'
+        }
+      }
+    },
+    series: [
+      {
+        name: 'Mannheim',
+        type: 'radar',
+        data: [
+          {
+            value: mannheimData,
+            name: this.mannheimDistrict.name,
+            areaStyle: {
+              color: 'rgba(102, 126, 234, 0.2)'
+            },
+            lineStyle: {
+              color: '#667eea',
+              width: 3
+            },
+            itemStyle: {
+              color: '#667eea',
+              borderColor: '#667eea',
+              borderWidth: 2
             }
-          ]
-        },
-        {
-          name: 'Kaiserslautern',
-          type: 'radar',
-          data: [
-            {
-              value: kaiserslauternData,
-              name: this.kaiserslauternDistrict.name,
-              areaStyle: {
-                color: 'rgba(240, 147, 251, 0.2)'
-              },
-              lineStyle: {
-                color: '#f093fb',
-                width: 3
-              },
-              itemStyle: {
-                color: '#f093fb',
-                borderColor: '#f093fb',
-                borderWidth: 2
-              }
+          }
+        ]
+      },
+      {
+        name: 'Kaiserslautern',
+        type: 'radar',
+        data: [
+          {
+            value: kaiserslauternData,
+            name: this.kaiserslauternDistrict.name,
+            areaStyle: {
+              color: 'rgba(240, 147, 251, 0.2)'
+            },
+            lineStyle: {
+              color: '#f093fb',
+              width: 3
+            },
+            itemStyle: {
+              color: '#f093fb',
+              borderColor: '#f093fb',
+              borderWidth: 2
             }
-          ]
-        }
-      ]
-    };
+          }
+        ]
+      }
+    ]
+  };
 
-    this.chart.setOption(option, true);
-  }
+  this.chart.setOption(option, true);
+}
 }
