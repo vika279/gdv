@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MapComponent } from './map/map.component';
 import { RadarChartComponent } from './radar-chart/radar-chart.component';
 import { ComparisonTableComponent } from './comparison-table/comparison-table.component';
+import { ComparisonCardsComponent } from "./comparison-cards/comparison-cards.component";
 
 export interface District {
   id: string;
@@ -24,9 +25,11 @@ export interface District {
   gesamt_kinder: number;
   kinder_0_6: number;
   kinder_6_10: number;
-    kinderanteilIndex: number;
+  kinder_0_10: number;
+  kinderanteilIndex: number;
   gesamt_Einwohner: number;
   avg_index: number;
+  kinder_grundschule: number;
 }
 
 export interface Facility {
@@ -40,246 +43,250 @@ export interface Facility {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, MapComponent, RadarChartComponent, ComparisonTableComponent],
+  imports: [
+    CommonModule,
+    MapComponent,
+    RadarChartComponent,
+    ComparisonTableComponent,
+    ComparisonCardsComponent
+],
   template: `
-
     <div class="app-container">
       <header class="header">
         <!-- <h1>Kinderfreundlichkeits-Vergleich: Mannheim vs. Kaiserslautern</h1>
         <p class="subtitle">Interaktive Analyse kindgerechter Infrastruktur für Kinder im Alter von 0-10 Jahren</p> -->
       </header>
-        <!-- <div class="comparison-section" *ngIf="selectedMannheim && selectedKaiserslautern"> -->
+      <!-- <div class="comparison-section" *ngIf="selectedMannheim && selectedKaiserslautern"> -->
 
+      <div class="comparison-content">
+        <!-- Radar Chart -->
+        <div class="chart-container">
+          <h2>Detailvergleich</h2>
+          <h3>Indikator-Vergleich</h3>
+          <app-radar-chart
+            [mannheimDistrict]="selectedMannheim"
+            [kaiserslauternDistrict]="selectedKaiserslautern"
+          >
+          </app-radar-chart>
+        </div>
 
-          <div class="comparison-content">
-            <!-- Radar Chart -->
-            <div class="chart-container">
-                 <h2>Detailvergleich</h2>
-              <h3>Indikator-Vergleich</h3>
-              <app-radar-chart
-                [mannheimDistrict]="selectedMannheim"
-                [kaiserslauternDistrict]="selectedKaiserslautern">
-              </app-radar-chart>
-            </div>
-
-            <!-- Vergleichstabelle -->
-            <div class="table-container">
-              <h3>Absolute Werte</h3>
-              <app-comparison-table
-                [mannheimDistrict]="selectedMannheim"
-                [kaiserslauternDistrict]="selectedKaiserslautern">
-              </app-comparison-table>
-            </div>
-          </div>
-        <!-- </div> -->
-
+        <!-- Vergleichstabelle -->
+        <div class="table-container">
+          <h3>Absolute Werte</h3>
+          <app-comparison-table
+            [mannheimDistrict]="selectedMannheim"
+            [kaiserslauternDistrict]="selectedKaiserslautern"
+          >
+          </app-comparison-table>
+        </div>
+      </div>
+      <!-- </div> -->
 
       <div class="main-content">
         <!-- Karten-Vergleich -->
         <div class="maps-section">
           <h2>Stadtvergleich</h2>
-          <p class="info">Klicken Sie je einen Stadtteil in beiden Städten an, um sie zu vergleichen.</p>
+          <p class="info">
+            Klicken Sie je einen Stadtteil in beiden Städten an, um sie zu
+            vergleichen.
+          </p>
 
           <app-map
             [districts]="districts"
-            (districtSelected)="onDistrictSelected($event)">
+            (districtSelected)="onDistrictSelected($event)"
+          >
           </app-map>
         </div>
+        <app-comparison-cards
+ [mannheimDistrict]="selectedMannheim"
+            [kaiserslauternDistrict]="selectedKaiserslautern">
+</app-comparison-cards>
 
         <!-- Auswahlstatus -->
         <!-- <div class="selection-status" *ngIf="selectedMannheim || selectedKaiserslautern"> -->
-          <div class="selected-districts">
-            <div class="selected-district mannheim" *ngIf="selectedMannheim">
-              <strong>Mannheim:</strong> {{ selectedMannheim.name }}
-              <span class="index">Index: {{ selectedMannheim.index }}/5</span>
-            </div>
-            <div class="selected-district kaiserslautern" *ngIf="selectedKaiserslautern">
-              <strong>Kaiserslautern:</strong> {{ selectedKaiserslautern.name }}
-              <span class="index">Index: {{ selectedKaiserslautern.index }}/5</span>
-            </div>
+        <!-- <div class="selected-districts">
+          <div class="selected-district mannheim" *ngIf="selectedMannheim">
+            <strong>Mannheim:</strong> {{ selectedMannheim.name }}
+            <span class="index">Index: {{ selectedMannheim.index }}/5</span>
           </div>
-        </div>
-
-
-        <!-- <div class="comparison-section" *ngIf="selectedMannheim && selectedKaiserslautern">
-          <h2>Detailvergleich</h2>
-
-          <div class="comparison-content">
-
-            <div class="chart-container">
-              <h3>Indikator-Vergleich</h3>
-              <app-radar-chart
-                [mannheimDistrict]="selectedMannheim"
-                [kaiserslauternDistrict]="selectedKaiserslautern">
-              </app-radar-chart>
-            </div>
-
-
-            <div class="table-container">
-              <h3>Absolute Werte</h3>
-              <app-comparison-table
-                [mannheimDistrict]="selectedMannheim"
-                [kaiserslauternDistrict]="selectedKaiserslautern">
-              </app-comparison-table>
-            </div>
+          <div
+            class="selected-district kaiserslautern"
+            *ngIf="selectedKaiserslautern"
+          >
+            <strong>Kaiserslautern:</strong> {{ selectedKaiserslautern.name }}
+            <span class="index"
+              >Index: {{ selectedKaiserslautern.index }}/5</span
+            >
           </div>
         </div> -->
-
-        <!-- Loading indicator -->
-        <div *ngIf="isLoading" class="loading">
-          <p>Lade Daten...</p>
-        </div>
-
-        <!-- Error message -->
-        <div *ngIf="errorMessage" class="error">
-          <p>{{ errorMessage }}</p>
-        </div>
       </div>
+
+
+      <!-- Loading indicator -->
+      <div *ngIf="isLoading" class="loading">
+        <p>Lade Daten...</p>
+      </div>
+
+      <!-- Error message -->
+      <div *ngIf="errorMessage" class="error">
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
     <!-- </div> -->
   `,
-  styles: [`
-    .app-container {
-  display: flex;
-  height: 100vh;
-  gap: 20px;
-  padding: 20px;
-  box-sizing: border-box;
-}
+  styles: [
+    `
+      .app-container {
+        display: flex;
+        // height: 100vh;
+        // gap: 20px;
+        // padding: 20px;
+        // box-sizing: border-box;
+      }
 
-.radar-section {
-  flex: 1; /* Takes 1/3 of the width */
-  min-width: 350px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-}
+      .comparison-content {
+        flex: 1; /* Takes 1/3 of the width */
+        min-width: 350px;
+         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        padding-left: 30px;
+          // border-right: 1px solid gray;
+      }
 
-.main-content {
-  flex: 2; /* Takes 2/3 of the width */
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  min-width: 600px;
-}
+      .main-content {
+        flex: 3; /* Takes 2/3 of the width */
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        min-width: 600px;
+      }
 
-.maps-section {
-  flex: 1;
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
+      .maps-section {
+        flex: 1;
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
 
-.maps-section h2 {
-  margin: 0 0 10px 0;
-  color: #333;
-  font-size: 1.5rem;
-}
+      .maps-section h2 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 1.5rem;
+      }
 
-.maps-section .info {
-  margin: 0 0 20px 0;
-  color: #666;
-  font-size: 0.95rem;
-}
+      .maps-section .info {
+        margin: 0 0 20px 0;
+        color: #666;
+        font-size: 0.95rem;
+      }
 
-.selected-districts {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
+      .selected-districts {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
 
-.selected-district {
-  flex: 1;
-  min-width: 250px;
-  padding: 15px 20px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+      .selected-district {
+        flex: 1;
+        min-width: 250px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
 
-.selected-district.mannheim {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-  border-left: 4px solid #667eea;
-}
+      .selected-district.mannheim {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1),
+          rgba(118, 75, 162, 0.1)
+        );
+        border-left: 4px solid #667eea;
+      }
 
-.selected-district.kaiserslautern {
-  background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1));
-  border-left: 4px solid #f093fb;
-}
+      .selected-district.kaiserslautern {
+        background: linear-gradient(
+          135deg,
+          rgba(240, 147, 251, 0.1),
+          rgba(245, 87, 108, 0.1)
+        );
+        border-left: 4px solid #f093fb;
+      }
 
-.index {
-  font-weight: bold;
-  padding: 6px 12px;
-  border-radius: 15px;
-  font-size: 0.85rem;
-}
+      .index {
+        font-weight: bold;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+      }
 
-.mannheim .index {
-  background: rgba(102, 126, 234, 0.2);
-  color: #667eea;
-}
+      .mannheim .index {
+        background: rgba(102, 126, 234, 0.2);
+        color: #667eea;
+      }
 
-.kaiserslautern .index {
-  background: rgba(240, 147, 251, 0.2);
-  color: #f093fb;
-}
+      .kaiserslautern .index {
+        background: rgba(240, 147, 251, 0.2);
+        color: #f093fb;
+      }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .app-container {
-    flex-direction: column;
-    height: auto;
-  }
+      /* Responsive Design */
+      @media (max-width: 1200px) {
+        .app-container {
+          flex-direction: column;
+          height: auto;
+        }
 
-  .radar-section {
-    flex: none;
-    min-width: auto;
-    order: 2;
-  }
+        .radar-section {
+          flex: none;
+          min-width: auto;
+          order: 2;
+        }
 
-  .main-content {
-    flex: none;
-    min-width: auto;
-    order: 1;
-  }
+        .main-content {
+          flex: none;
+          min-width: auto;
+          order: 1;
+        }
 
-  .selected-districts {
-    flex-direction: column;
-  }
+        .selected-districts {
+          flex-direction: column;
+        }
 
-  .selected-district {
-    min-width: auto;
-  }
-}
+        .selected-district {
+          min-width: auto;
+        }
+      }
 
-@media (max-width: 768px) {
-  .app-container {
-    padding: 10px;
-    gap: 10px;
-  }
+      @media (max-width: 768px) {
+        .app-container {
+          padding: 10px;
+          gap: 10px;
+        }
 
-  .radar-section, .maps-section {
-    padding: 15px;
-  }
+        .radar-section,
+        .maps-section {
+          padding: 15px;
+        }
 
-  .selected-districts {
-    gap: 10px;
-  }
+        .selected-districts {
+          gap: 10px;
+        }
 
-  .selected-district {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-}
-  `]
+        .selected-district {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+      }
+    `,
+  ],
 })
 export class AppComponent implements OnInit {
   selectedMannheim: District | null = null;
@@ -291,43 +298,43 @@ export class AppComponent implements OnInit {
   // Approximate coordinates for districts (you may want to adjust these)
   private readonly districtCoordinates: { [key: string]: [number, number] } = {
     // Kaiserslautern districts
-    'Betzenberg': [49.4386, 7.7589],
-    'Bännjerrück/Karl-Pfaff-Siedlung': [49.4500, 7.7400],
-    'Dansenberg': [49.4700, 7.7300],
-    'Einsiedlerhof': [49.4200, 7.7800],
-    'Erfenbach': [49.4600, 7.8000],
-    'Erlenbach': [49.4300, 7.7200],
-    'Erzhütten/Wiesenthalerhof': [49.4100, 7.7600],
-    'Grübentälchen/Volkspark': [49.4450, 7.7650],
-    'Hohenecken': [49.4800, 7.7100],
-    'Innenstadt-Nord/Kaiserberg': [49.4500, 7.7700],
-    'Innenstadt-Ost': [49.4447, 7.7750],
-    'Innenstadt-Südwest': [49.4400, 7.7650],
-    'Innenstadt-West/Kotten': [49.4450, 7.7600],
-    'Kaiserslautern-West': [49.4400, 7.7500],
-    'Lämmchesberg/Uniwohnstadt': [49.4250, 7.7450],
-    'Morlautern': [49.4650, 7.8100],
-    'Mölschbach': [49.4750, 7.8200],
-    'Siegelbach': [49.4850, 7.8050],
+    Betzenberg: [49.4386, 7.7589],
+    'Bännjerrück/Karl-Pfaff-Siedlung': [49.45, 7.74],
+    Dansenberg: [49.47, 7.73],
+    Einsiedlerhof: [49.42, 7.78],
+    Erfenbach: [49.46, 7.8],
+    Erlenbach: [49.43, 7.72],
+    'Erzhütten/Wiesenthalerhof': [49.41, 7.76],
+    'Grübentälchen/Volkspark': [49.445, 7.765],
+    Hohenecken: [49.48, 7.71],
+    'Innenstadt-Nord/Kaiserberg': [49.45, 7.77],
+    'Innenstadt-Ost': [49.4447, 7.775],
+    'Innenstadt-Südwest': [49.44, 7.765],
+    'Innenstadt-West/Kotten': [49.445, 7.76],
+    'Kaiserslautern-West': [49.44, 7.75],
+    'Lämmchesberg/Uniwohnstadt': [49.425, 7.745],
+    Morlautern: [49.465, 7.81],
+    Mölschbach: [49.475, 7.82],
+    Siegelbach: [49.485, 7.805],
 
     // Mannheim districts
-    'Feudenheim': [49.5194, 8.5378],
-    'Friedrichsfeld': [49.5300, 8.5600],
+    Feudenheim: [49.5194, 8.5378],
+    Friedrichsfeld: [49.53, 8.56],
     'Innenstadt/Jungbusch': [49.4875, 8.4706],
-    'Käfertal': [49.5278, 8.5056],
-    'Lindenhof': [49.4755, 8.4611],
-    'Neckarau': [49.4650, 8.5200],
+    Käfertal: [49.5278, 8.5056],
+    Lindenhof: [49.4755, 8.4611],
+    Neckarau: [49.465, 8.52],
     'Neckarstadt-Ost': [49.5058, 8.4944],
-    'Neckarstadt-West': [49.4950, 8.4750],
-    'Neuostheim/Neuhermsheim': [49.4800, 8.5100],
-    'Rheinau': [49.4450, 8.5350],
-    'Sandhofen': [49.5450, 8.4900],
-    'Schönau': [49.5350, 8.4700],
+    'Neckarstadt-West': [49.495, 8.475],
+    'Neuostheim/Neuhermsheim': [49.48, 8.51],
+    Rheinau: [49.445, 8.535],
+    Sandhofen: [49.545, 8.49],
+    Schönau: [49.535, 8.47],
     'Schwetzingerstadt/Oststadt': [49.4844, 8.4889],
-    'Seckenheim': [49.4550, 8.5750],
-    'Vogelstang': [49.5150, 8.4600],
-    'Waldhof': [49.5200, 8.4550],
-    'Wallhof': [49.4950, 8.4450]
+    Seckenheim: [49.455, 8.575],
+    Vogelstang: [49.515, 8.46],
+    Waldhof: [49.52, 8.455],
+    Wallhof: [49.495, 8.445],
   };
 
   ngOnInit() {
@@ -342,15 +349,14 @@ export class AppComponent implements OnInit {
       // Parse CSV data (you'll need to implement CSV parsing or use a library)
       const csvData = this.parseCSVData();
       this.districts = this.processDistrictData(csvData);
-
     } catch (error) {
-      this.errorMessage = 'Fehler beim Laden der Daten: ' + (error as Error).message;
+      this.errorMessage =
+        'Fehler beim Laden der Daten: ' + (error as Error).message;
       console.error('Error loading CSV data:', error);
     } finally {
       this.isLoading = false;
     }
   }
-
 
   private parseCSVData(): any[] {
     // Here you would typically use a CSV parsing library like Papa Parse
@@ -426,14 +432,18 @@ Kaiserslautern;Gesamt;8,888888889;2,230555556;2,530555556;0,333333333;0,04666666
     return csvData.map((row, index) => {
       const districtName = row['Stadtbezirk'];
       const city = row['Stadt'];
-      const coordinates = this.districtCoordinates[districtName] || [49.45, 7.77]; // Fallback coordinates
+      const coordinates = this.districtCoordinates[districtName] || [
+        49.45, 7.77,
+      ]; // Fallback coordinates
 
       // Calculate overall index based on AVG column, scale to 1-5
       const avgIndex = row['AVG'] || 0;
       const scaledIndex = Math.max(1, Math.min(5, Math.round(avgIndex)));
 
       return {
-        id: `${city.toLowerCase().substring(0, 2)}-${districtName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+        id: `${city.toLowerCase().substring(0, 2)}-${districtName
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '-')}`,
         name: districtName,
         city: city,
         coordinates: coordinates,
@@ -451,21 +461,23 @@ Kaiserslautern;Gesamt;8,888888889;2,230555556;2,530555556;0,333333333;0,04666666
         spielplaetzeIndex: row['Index_Spielplätze'] || 0,
         gesamt_kinder: row['gesamt_Kinder'] || 0,
         kinder_0_6: row['0-6'] || 0,
-        kinder_6_10: row['6 bis 10'] || 0,
-     kinderanteilIndex: row['Index_%0-10'] || 0,
-        gesamt_Einwohner: row['gesamt_Einwohner']|| 0,
-        avg_index: row['AVG'] || 0
+        kinder_6_10: row['6-10'] || 0,
+        kinder_0_10: row['0-10'] || 0,
+        kinder_grundschule: row['Grundschulen_pro_100'] || 0,
+        kinderanteilIndex: row['Index_%0-10'] || 0,
+        gesamt_Einwohner: row['gesamt_Einwohner'] || 0,
+        avg_index: row['AVG'] || 0,
       };
     });
   }
 
   private getColorForIndex(index: number): string {
     const colors = {
-      1: '#d73027',  // Sehr niedrig - rot
-      2: '#f46d43',  // Niedrig - orange
-      3: '#fdae61',  // Mittel - gelb
-      4: '#abd9e9',  // Hoch - hellblau
-      5: '#2166ac'   // Sehr hoch - dunkelblau
+      1: '#d73027', // Sehr niedrig - rot
+      2: '#f46d43', // Niedrig - orange
+      3: '#fdae61', // Mittel - gelb
+      4: '#abd9e9', // Hoch - hellblau
+      5: '#2166ac', // Sehr hoch - dunkelblau
     };
     return colors[index as keyof typeof colors] || '#gray';
   }

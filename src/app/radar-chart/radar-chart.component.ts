@@ -111,8 +111,9 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
     kinder_0_6: 88.71, // From your data
     kinder_6_10: 525.53, // From your data
     gesamt_Einwohner: 19332.18, // From your data
-    avg_index: 2.54, // Average of all indices
-
+    avg_index: 2.54,
+    kinder_0_10: 0,
+    kinder_grundschule: 0
   };
 
   private defaultKaiserslauternGesamt: District = {
@@ -138,8 +139,9 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
     kinder_0_6: 87.68, // From your data
     kinder_6_10: 189.2, // From your data
     gesamt_Einwohner: 5644.28, // From your data
-    avg_index: 2.26, // Average of all indices
-
+    avg_index: 2.26,
+    kinder_0_10: 0,
+     kinder_grundschule:0,
   };
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
@@ -272,7 +274,8 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
       mannheimDistrict.grundschulenIndex || 0,
       mannheimDistrict.kinderaerzteIndex || 0,
       mannheimDistrict.spielplaetzeIndex || 0,
-      mannheimDistrict.kinderanteilIndex || 0
+      mannheimDistrict.kinderanteilIndex || 0,
+
     ];
 
     const kaiserslauternChartData = [
