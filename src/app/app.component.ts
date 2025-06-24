@@ -88,11 +88,7 @@ export interface Facility {
       <div class="main-content">
         <!-- Karten-Vergleich -->
         <div class="maps-section">
-          <h2>Stadtvergleich</h2>
-          <p class="info">
-            Klicken Sie je einen Stadtteil in beiden Städten an, um sie zu
-            vergleichen.
-          </p>
+          <!-- <h2>Stadtvergleich</h2> -->
 
           <app-map
             [districts]="districts"
@@ -173,7 +169,6 @@ export interface Facility {
         flex: 1;
         background: white;
         border-radius: 12px;
-        padding: 25px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       }
 
@@ -370,7 +365,7 @@ export class AppComponent implements OnInit {
     // For now, I'll provide a manual parsing approach based on your data
     const csvText = `Stadt;Stadtbezirk;Anzahl_Spielplätze;Spielplätze_pro_100;Index_Spielplätze;Anzahl_Kinderärzte;Kinderärzte_pro_100;Index_Kinderärzte;Grundschule_plätze;Grundschulen_pro_100;Index_Grundschule;Kita_Plätze;Kitas_pro_100;Index_Kitas;gesamt_Einwohner;0-6;%0-6;6 bis 10;% 6 bis 10;0-10;%0-10;Index_%0-10;Index_gesamt;AVG
 Kaiserslautern;Betzenberg;8;1,72;2,09;2;0,43;5;156;73,58;2,12;181;71,83;2,71;5096;252;4,95;212;4,16;464;9,11;2,93;3,61;2,98
-Kaiserslautern;Bännjerrück/Karl-Pfaff-Siedlung;13;3,86;3,94;0;0;1;370;262,41;5;150;76,53;2,82;5050;196;3,88;141;2,79;337;6,67;1,66;3,93;3,19
+Kaiserslautern;Bännjerrück\/Karl-Pfaff-S.;13;3,86;3,94;0;0;1;370;262,41;5;150;76,53;2,82;5050;196;3,88;141;2,79;337;6,67;1,66;3,93;3,19
 Kaiserslautern;Dansenberg;7;3,26;3,42;0;0;1;90;111,11;2,69;97;72,39;2,73;2428;134;5,52;81;3,34;215;8,86;2,8;2,81;2,46
 Kaiserslautern;Einsiedlerhof;5;4,67;4,64;0;0;1;0;0;1;70;116,67;3,78;1315;60;4,56;47;3,57;107;8,14;2,42;3,04;2,61
 Kaiserslautern;Erfenbach;2;0,81;1,3;0;0;1;141;122,61;2,87;108;81,2;2,94;2746;133;4,84;115;4,19;248;9,03;2,89;2,14;2,03
