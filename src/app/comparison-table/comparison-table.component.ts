@@ -1,26 +1,48 @@
-import { Component, Input, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { District } from '../app.component';
-import * as echarts from 'echarts';
 
 // Erweiterte District-Schnittstelle für die Chart-Daten
 interface ExtendedDistrict extends District {
-  // Basierend auf Ihren Tabellendaten
-  'Spielplätze_pro_100'?: number;
-  'Kinderärzte_pro_100'?: number;
+  Spielplätze_pro_100?: number;
+  Kinderärzte_pro_100?: number;
   Grundschulen_pro_100?: number;
   Kitas_pro_100?: number;
-  '%0-10'?: number;           // Kinderanteil 0-10 Jahre in Prozent
-  Index_gesamt?: number;      // Gesamtindex
-
-  // Zusätzliche Felder aus Ihren Daten
+  '%0-10'?: number;
+  Index_gesamt?: number;
   Index_Spielplätze?: number;
   Index_Kinderärzte?: number;
   Index_Grundschule?: number;
   Index_Kitas?: number;
   'Index_%0-10'?: number;
   AVG?: number;
-  //  kinder_grundschule?: number;
+}
+
+interface MetricCard {
+  icon: string;
+  label: string;
+  value: number;
+  unit: string;
+}
+
+interface ChartData {
+  label: string;
+  mannheimValue: number;
+  kaiserslauternValue: number;
+  mannheimAvg: number;
+  kaiserslauternAvg: number;
+  bothCitiesAvg: number;
+  maxValue: number;
 }
 
 @Component({
@@ -28,92 +50,274 @@ interface ExtendedDistrict extends District {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="chart-container">
-      <!-- Header mit Scores -->
-      <div class="header-scores">
-        <div class="score-item mannheim">
-          <span class="score-circle">{{ getMannheimScore() }}/5</span>
-          <span class="city-name">Mannheim {{mannheimDistrict?.name}}</span>
+    <div class="cards-container">
+      <h3 class="cards-title">{{ getChartTitle() }}</h3>
+
+      <!-- Bar Chart Section - immer anzeigen -->
+      <div class="chart-section">
+        <div class="chart-container">
+          <div class="chart-item" *ngFor="let data of getChartData()">
+            <div class="chart-label">{{ data.label }}</div>
+            <div class="chart-bars">
+              <!-- Mannheim Bar -->
+              <div class="bar-container mannheim-bar">
+                <div class="bar-background">
+                  <div
+                    class="bar-fill mannheim-fill"
+                    [style.width.%]="(data.mannheimValue / data.maxValue) * 100"
+                  ></div>
+                  <!-- Durchschnittslinie Mannheim - nur wenn Stadtteile ausgewählt -->
+                  <div
+                    *ngIf="hasDistrictsSelected()"
+                    class="avg-line mannheim-avg-line"
+                    [style.left.%]="(data.mannheimAvg / data.maxValue) * 100"
+                    [title]="'Durchschnitt Mannheim: ' + data.mannheimAvg.toFixed(1)"
+                  ></div>
+                  <!-- Durchschnittslinie beide Städte - nur wenn Stadtteile ausgewählt -->
+                  <div
+                    *ngIf="hasDistrictsSelected()"
+                    class="avg-line both-cities-avg-line"
+                    [style.left.%]="(data.bothCitiesAvg / data.maxValue) * 100"
+                    [title]="'Durchschnitt beide Städte: ' + data.bothCitiesAvg.toFixed(1)"
+                  ></div>
+                </div>
+                <div class="bar-value mannheim-value">{{ data.mannheimValue.toFixed(1) }}</div>
+              </div>
+
+              <!-- Kaiserslautern Bar -->
+              <div class="bar-container kaiserslautern-bar">
+                <div class="bar-background">
+                  <div
+                    class="bar-fill kaiserslautern-fill"
+                    [style.width.%]="(data.kaiserslauternValue / data.maxValue) * 100"
+                  ></div>
+                  <!-- Durchschnittslinie Kaiserslautern - nur wenn Stadtteile ausgewählt -->
+                  <div
+                    *ngIf="hasDistrictsSelected()"
+                    class="avg-line kaiserslautern-avg-line"
+                    [style.left.%]="(data.kaiserslauternAvg / data.maxValue) * 100"
+                    [title]="'Durchschnitt Kaiserslautern: ' + data.kaiserslauternAvg.toFixed(1)"
+                  ></div>
+                  <!-- Durchschnittslinie beide Städte - nur wenn Stadtteile ausgewählt -->
+                  <div
+                    *ngIf="hasDistrictsSelected()"
+                    class="avg-line both-cities-avg-line"
+                    [style.left.%]="(data.bothCitiesAvg / data.maxValue) * 100"
+                    [title]="'Durchschnitt beide Städte: ' + data.bothCitiesAvg.toFixed(1)"
+                  ></div>
+                </div>
+                <div class="bar-value kaiserslautern-value">{{ data.kaiserslauternValue.toFixed(1) }}</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="score-item kaiserslautern">
-          <span class="score-circle">{{ getKaiserslauternScore() }}/5</span>
-          <span class="city-name">Kaiserslautern  {{kaiserslauternDistrict?.name}}</span>
+
+        <!-- Legende - nur anzeigen wenn Stadtteile ausgewählt sind -->
+        <div class="legend" *ngIf="hasDistrictsSelected()">
+          <div class="legend-item">
+            <div class="legend-color mannheim-avg-line"></div>
+            <span>Durchschnitt Mannheim</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color kaiserslautern-avg-line"></div>
+            <span>Durchschnitt Kaiserslautern</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color both-cities-avg-line"></div>
+            <span>Durchschnitt beide Städte</span>
+          </div>
         </div>
       </div>
-
-      <!-- Titel -->
-      <h3 class="chart-title">Anzahl pro 100 Kinder</h3>
-
-      <!-- ECharts Container -->
-      <div #chartContainer class="chart" style="height: 400px;"></div>
     </div>
   `,
-  styles: [`
-    .chart-container {
-      // width: 100%;
-      // background: white;
-      // border-radius: 12px;
-      // padding: 20px;
-      // box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-    }
+  styles: [
+    `
+      .cards-container {
+        width: 100%;
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+      }
 
-    .header-scores {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
+      .cards-title {
+        margin: 0 0 20px 0;
+        color: #333;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
 
-    .score-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+      .bar-label {
+        font-size: 0.85rem;
+        color: #666;
+        font-weight: 500;
+        text-align: center;
+        margin-top: 5px;
+      }
 
-    .score-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 0.9rem;
-    }
+      .mannheim-value {
+        color: #dc3545;
+      }
 
-    .score-item.mannheim .score-circle {
-      background: #dc3545;
-    }
+      .kaiserslautern-value {
+        color: #007bff;
+      }
 
-    .score-item.kaiserslautern .score-circle {
-      background: #007bff;
-    }
+      /* Chart Styles */
+      .chart-section {
+        padding-top: 20px;
+      }
 
-    .city-name {
-      font-weight: 600;
-      color: #333;
-    }
+      .chart-container {
+        display: flex;
+        flex-direction: column;
+        gap: 30px; /* Größerer Abstand zwischen Kategorien */
+      }
 
-    .chart-title {
-      margin: 0 0 20px 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #333;
-    }
+      .chart-item {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
 
-    .chart {
-      width: 100%;
-    }
-  `]
+      .chart-label {
+        min-width: 100px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #666;
+      }
+
+      .chart-bars {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px; /* Kleinerer Abstand zwischen den beiden Städten */
+        max-width: 600px; /* Fixierte maximale Breite */
+      }
+
+      .bar-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .bar-background {
+        position: relative;
+        width: 300px; /* Fixierte Breite für alle Balken */
+        height: 25px;
+        background: #f1f3f4;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        height: 100%;
+        border-radius: 12px;
+        transition: width 0.3s ease;
+      }
+
+      .mannheim-fill {
+        background: linear-gradient(90deg, #dc3545, #ff6b7a);
+      }
+
+      .kaiserslautern-fill {
+        background: linear-gradient(90deg, #007bff, #4dabf7);
+      }
+
+      .avg-line {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        z-index: 2;
+      }
+
+      .mannheim-avg-line {
+        background:rgb(255, 113, 5);
+      }
+
+      .kaiserslautern-avg-line {
+        background:rgb(5, 88, 255);
+      }
+
+      .both-cities-avg-line {
+        background: #666;
+
+      }
+
+      .bar-value {
+        min-width: 50px;
+        text-align: left;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      /* Legend */
+      .legend {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: #666;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 3px;
+        border-radius: 2px;
+      }
+
+      @media (max-width: 968px) {
+        .chart-item {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .chart-label {
+          min-width: auto;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+
+        .chart-bars {
+          max-width: none;
+        }
+
+        .bar-background {
+          width: 250px; /* Kleinere fixierte Breite für mobile Geräte */
+        }
+
+        .legend {
+          flex-direction: column;
+          gap: 10px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .bar-label {
+          font-size: 0.8rem;
+        }
+
+        .bar-background {
+          width: 200px; /* Noch kleinere Breite für sehr kleine Bildschirme */
+        }
+      }
+    `,
+  ],
 })
-export class ComparisonTableComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+export class ComparisonTableComponent implements OnInit, OnChanges {
   @Input() mannheimDistrict: District | null = null;
   @Input() kaiserslauternDistrict: District | null = null;
-  @ViewChild('chartContainer', { static: false }) chartContainer!: ElementRef;
 
-  private chart: echarts.ECharts | null = null;
-
-  // Default-Werte für Gesamtdaten (basierend auf Ihren ursprünglichen Daten)
+  // Default-Werte für Gesamtdaten
   private defaultMannheimDistrict: ExtendedDistrict = {
     name: 'Gesamt',
     kitas: 23,
@@ -122,12 +326,11 @@ export class ComparisonTableComponent implements OnInit, AfterViewInit, OnDestro
     spielplaetze: 2,
     kinderanteil: 9.6,
     index: 2.1,
-    coordinates: [49.4875, 8.4660],
-    // Pro 100 Kinder Werte (Default-Werte)
+    coordinates: [49.4875, 8.466],
     Kitas_pro_100: 9,
     Grundschulen_pro_100: 6,
-    'Kinderärzte_pro_100': 1,
-    'Spielplätze_pro_100': 5,
+    Kinderärzte_pro_100: 1,
+    Spielplätze_pro_100: 5,
     '%0-10': 7,
     Index_gesamt: 4,
     id: '',
@@ -140,11 +343,11 @@ export class ComparisonTableComponent implements OnInit, AfterViewInit, OnDestro
     gesamt_kinder: 0,
     kinder_0_6: 0,
     kinder_6_10: 0,
-        kinder_0_10: 0,
+    kinder_0_10: 0,
     kinderanteilIndex: 0,
     gesamt_Einwohner: 0,
     avg_index: 0,
-     kinder_grundschule: 0,
+    kinder_grundschule: 0,
   };
 
   private defaultKaiserslauternDistrict: ExtendedDistrict = {
@@ -156,11 +359,10 @@ export class ComparisonTableComponent implements OnInit, AfterViewInit, OnDestro
     kinderanteil: 8.3,
     index: 1.4,
     coordinates: [49.4401, 7.7491],
-    // Pro 100 Kinder Werte (Default-Werte)
     Kitas_pro_100: 7,
     Grundschulen_pro_100: 8,
-    'Kinderärzte_pro_100': 2,
-    'Spielplätze_pro_100': 6,
+    Kinderärzte_pro_100: 2,
+    Spielplätze_pro_100: 6,
     '%0-10': 5,
     Index_gesamt: 3,
     id: '',
@@ -177,34 +379,60 @@ export class ComparisonTableComponent implements OnInit, AfterViewInit, OnDestro
     kinderanteilIndex: 0,
     gesamt_Einwohner: 0,
     avg_index: 0,
-     kinder_grundschule: 0
+    kinder_grundschule: 0,
+  };
+
+  // Durchschnittswerte für die Städte (diese sollten aus Ihren Daten kommen)
+  private mannheimAverages = {
+    kinderanteil: 10.5,
+    kitas: 8.2,
+    spielplaetze: 5.8,
+    grundschulen: 2.1,
+    kinderaerzte: 0.8
+  };
+
+  private kaiserslauternAverages = {
+    kinderanteil: 9.2,
+    kitas: 6.5,
+    spielplaetze: 4.3,
+    grundschulen: 1.8,
+    kinderaerzte: 0.6
   };
 
   ngOnInit() {}
 
-  ngAfterViewInit() {
-    this.initChart();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    // Wenn sich die Input-Daten ändern, Chart aktualisieren
-    if ((changes['mannheimDistrict'] || changes['kaiserslauternDistrict']) && this.chart) {
-      this.updateChart();
-    }
-  }
-
-  ngOnDestroy() {
-    if (this.chart) {
-      this.chart.dispose();
-    }
-  }
+  ngOnChanges(changes: SimpleChanges) {}
 
   get displayMannheimDistrict(): ExtendedDistrict {
-    return this.mannheimDistrict as ExtendedDistrict || this.defaultMannheimDistrict;
+    // Wenn ein Stadtteil ausgewählt ist, verwende diesen, sonst Gesamtwerte
+    return (
+      (this.mannheimDistrict as ExtendedDistrict) ||
+      this.defaultMannheimDistrict
+    );
   }
 
   get displayKaiserslauternDistrict(): ExtendedDistrict {
-    return this.kaiserslauternDistrict as ExtendedDistrict || this.defaultKaiserslauternDistrict;
+    // Wenn ein Stadtteil ausgewählt ist, verwende diesen, sonst Gesamtwerte
+    return (
+      (this.kaiserslauternDistrict as ExtendedDistrict) ||
+      this.defaultKaiserslauternDistrict
+    );
+  }
+
+  // Titel für das Chart basierend auf Auswahl
+  getChartTitle(): string {
+    if (this.hasDistrictsSelected()) {
+      return 'Vergleich mit Durchschnittswerten';
+    }
+    return 'Gesamtvergleich der Städte';
+  }
+
+  // Prüft ob mindestens ein Stadtteil ausgewählt ist (nicht "Gesamt")
+  hasDistrictsSelected(): boolean {
+    return (
+      (this.mannheimDistrict !== null && this.mannheimDistrict.name !== 'Gesamt') ||
+      (this.kaiserslauternDistrict !== null && this.kaiserslauternDistrict.name !== 'Gesamt')
+    );
   }
 
   getMannheimScore(): number {
@@ -217,208 +445,175 @@ export class ComparisonTableComponent implements OnInit, AfterViewInit, OnDestro
     return Math.round(district.Index_gesamt || district.index);
   }
 
-private getChartValue(district: ExtendedDistrict, field: string): number {
-  switch (field) {
-    case 'kitas':
-      return Math.round(district.Kitas_pro_100 || district.kitas / district.kinder_0_6 * 100 || 0);
-    case 'grundschulen':
-      return Math.round(district.Grundschulen_pro_100 || district.kinder_grundschule || 0);
-    case 'kinderaerzte':
-      return Math.round(district['Kinderärzte_pro_100'] || district.kinderaerzte || 0);
-    case 'spielplaetze':
-      return Math.round(district['Spielplätze_pro_100'] || district.spielplaetze || 0);
-    case 'kinderanteil':
-      return Math.round(district.kinderanteil || 0);
-    default:
-      return 0;
+  private getChartValue(district: ExtendedDistrict, field: string): number {
+    switch (field) {
+      case 'kitas':
+        return (
+          district.Kitas_pro_100 ||
+          (district.kitas / district.kinder_0_6) * 100 ||
+          0
+        );
+      case 'grundschulen':
+        return (
+          district.Grundschulen_pro_100 || district.kinder_grundschule || 0
+        );
+      case 'kinderaerzte':
+        return district['Kinderärzte_pro_100'] || district.kinderaerzte || 0;
+      case 'spielplaetze':
+        return district['Spielplätze_pro_100'] || district.spielplaetze || 0;
+      case 'kinderanteil':
+        return district['%0-10'] || district.kinderanteil || 0;
+      default:
+        return 0;
+    }
   }
-}
 
-  private initChart() {
-    if (!this.chartContainer) return;
+  getMannheimMetrics(): MetricCard[] {
+    const mannheim = this.displayMannheimDistrict;
 
-    this.chart = echarts.init(this.chartContainer.nativeElement);
-    this.updateChart();
+    return [
+      {
+        icon: '👨‍👩‍👧‍👦',
+        label: 'Kinderanteil',
+        value: this.getChartValue(mannheim, 'kinderanteil'),
+        unit: '%',
+      },
+      {
+        icon: '🏫',
+        label: 'Kita',
+        value: this.getChartValue(mannheim, 'kitas'),
+        unit: '',
+      },
+      {
+        icon: '🎪',
+        label: 'Spielplätze',
+        value: this.getChartValue(mannheim, 'spielplaetze'),
+        unit: '',
+      },
+      {
+        icon: '🏫',
+        label: 'Grundschulen',
+        value: this.getChartValue(mannheim, 'grundschulen'),
+        unit: '',
+      },
+      {
+        icon: '👨‍⚕️',
+        label: 'Kinderärzte',
+        value: this.getChartValue(mannheim, 'kinderaerzte'),
+        unit: '',
+      },
+    ];
+  }
 
-    // Responsive
-    window.addEventListener('resize', () => {
-      if (this.chart) {
-        this.chart.resize();
+  getKaiserslauternMetrics(): MetricCard[] {
+    const kaiserslautern = this.displayKaiserslauternDistrict;
+
+    return [
+      {
+        icon: '👨‍👩‍👧‍👦',
+        label: 'Kinderanteil',
+        value: this.getChartValue(kaiserslautern, 'kinderanteil'),
+        unit: '%',
+      },
+      {
+        icon: '🏫',
+        label: 'Kita',
+        value: this.getChartValue(kaiserslautern, 'kitas'),
+        unit: '',
+      },
+      {
+        icon: '🎪',
+        label: 'Spielplätze',
+        value: this.getChartValue(kaiserslautern, 'spielplaetze'),
+        unit: '',
+      },
+      {
+        icon: '🏫',
+        label: 'Grundschulen',
+        value: this.getChartValue(kaiserslautern, 'grundschulen'),
+        unit: '',
+      },
+      {
+        icon: '👨‍⚕️',
+        label: 'Kinderärzte',
+        value: this.getChartValue(kaiserslautern, 'kinderaerzte'),
+        unit: '',
+      },
+    ];
+  }
+
+  getChartData(): ChartData[] {
+    const mannheim = this.displayMannheimDistrict;
+    const kaiserslautern = this.displayKaiserslauternDistrict;
+
+    const metrics = [
+      {
+        field: 'kinderanteil',
+        label: 'Kinderanteil',
+        mannheimAvg: this.mannheimAverages.kinderanteil,
+        kaiserslauternAvg: this.kaiserslauternAverages.kinderanteil
+      },
+      {
+        field: 'kitas',
+        label: 'Kitas',
+        mannheimAvg: this.mannheimAverages.kitas,
+        kaiserslauternAvg: this.kaiserslauternAverages.kitas
+      },
+      {
+        field: 'spielplaetze',
+        label: 'Spielplätze',
+        mannheimAvg: this.mannheimAverages.spielplaetze,
+        kaiserslauternAvg: this.kaiserslauternAverages.spielplaetze
+      },
+      {
+        field: 'grundschulen',
+        label: 'Grundschulen',
+        mannheimAvg: this.mannheimAverages.grundschulen,
+        kaiserslauternAvg: this.kaiserslauternAverages.grundschulen
+      },
+      {
+        field: 'kinderaerzte',
+        label: 'Kinderärzte',
+        mannheimAvg: this.mannheimAverages.kinderaerzte,
+        kaiserslauternAvg: this.kaiserslauternAverages.kinderaerzte
       }
+    ];
+
+    return metrics.map(metric => {
+      const mannheimValue = this.getChartValue(mannheim, metric.field);
+      const kaiserslauternValue = this.getChartValue(kaiserslautern, metric.field);
+      const bothCitiesAvg = (metric.mannheimAvg + metric.kaiserslauternAvg) / 2;
+
+      // Wenn keine Stadtteile ausgewählt sind, berücksichtige keine Durchschnittswerte für maxValue
+      let maxValue;
+      if (this.hasDistrictsSelected()) {
+        maxValue = Math.max(
+          mannheimValue,
+          kaiserslauternValue,
+          metric.mannheimAvg,
+          metric.kaiserslauternAvg,
+          bothCitiesAvg
+        ) * 1.1;
+      } else {
+        maxValue = Math.max(mannheimValue, kaiserslauternValue) * 1.1;
+      }
+
+      return {
+        label: metric.label,
+        mannheimValue,
+        kaiserslauternValue,
+        mannheimAvg: metric.mannheimAvg,
+        kaiserslauternAvg: metric.kaiserslauternAvg,
+        bothCitiesAvg,
+        maxValue
+      };
     });
   }
 
-private updateChart() {
-  if (!this.chart) return;
-
-  const mannheim = this.displayMannheimDistrict;
-  const kaiserslautern = this.displayKaiserslauternDistrict;
-
-  // DEBUG: Alle verfügbaren Felder ausgeben
-  console.log('Mannheim District Felder:', Object.keys(mannheim));
-  console.log('Mannheim Spielplätze_pro_100:', mannheim['Spielplätze_pro_100']);
-  console.log('Mannheim Kinderärzte_pro_100:', mannheim['Kinderärzte_pro_100']);
-  console.log('Mannheim Grundschulen_pro_100:', mannheim['Grundschulen_pro_100']);
-  console.log('Mannheim Kitas_pro_100:', mannheim.Kitas_pro_100);
-  console.log('Mannheim %0-10:', mannheim['%0-10']);
-
-  // Dynamisch das Maximum basierend auf den tatsächlichen Werten berechnen
-  const allValues = [
-    this.getChartValue(mannheim, 'kinderanteil'),
-    this.getChartValue(mannheim, 'kinderaerzte'),
-    this.getChartValue(mannheim, 'spielplaetze'),
-    this.getChartValue(mannheim, 'grundschulen'),
-    this.getChartValue(mannheim, 'kitas'),
-    this.getChartValue(kaiserslautern, 'kinderanteil'),
-    this.getChartValue(kaiserslautern, 'kinderaerzte'),
-    this.getChartValue(kaiserslautern, 'spielplaetze'),
-    this.getChartValue(kaiserslautern, 'grundschulen'),
-    this.getChartValue(kaiserslautern, 'kitas')
-  ];
-
-  const maxValue = Math.max(...allValues);
-  // Etwas Puffer hinzufügen (10% mehr als der höchste Wert)
-  const chartMax = Math.ceil(maxValue * 1.1);
-
-  const option = {
-    grid: {
-      left: '15%',
-      right: '10%',
-      top: '5%',
-      bottom: '5%'
-    },
-    xAxis: {
-      type: 'value',
-      max: chartMax, // Dynamisches Maximum statt festem Wert
-      axisLine: {
-        show: false
-      },
-      axisTick: {
-        show: false
-      },
-      axisLabel: {
-        show: false
-      },
-      splitLine: {
-        show: false
-      }
-    },
-    yAxis: {
-      type: 'category',
-      data: ['Kinderanteil', 'Kinderärzte', 'Spielplätze', 'Grundschule', 'Kita'],
-      axisLine: {
-        show: false
-      },
-      axisTick: {
-        show: false
-      },
-      axisLabel: {
-        fontSize: 12,
-        color: '#666'
-      }
-    },
-    series: [
-      {
-        name: 'Mannheim',
-        type: 'bar',
-        data: [
-          this.getChartValue(mannheim, 'kinderanteil'),
-          this.getChartValue(mannheim, 'kinderaerzte'),
-          this.getChartValue(mannheim, 'spielplaetze'),
-          this.getChartValue(mannheim, 'grundschulen'),
-          this.getChartValue(mannheim, 'kitas')
-        ],
-        itemStyle: {
-          color: '#dc3545'
-        },
-        barWidth: 20,
-        label: {
-          show: true,
-          position: 'inside',
-          color: 'white',
-          fontSize: 11,
-          fontWeight: 'bold',
-          formatter: '{c}'
-        }
-      },
-      {
-        name: 'Kaiserslautern',
-        type: 'bar',
-        data: [
-          this.getChartValue(kaiserslautern, 'kinderanteil'),
-          this.getChartValue(kaiserslautern, 'kinderaerzte'),
-          this.getChartValue(kaiserslautern, 'spielplaetze'),
-          this.getChartValue(kaiserslautern, 'grundschulen'),
-          this.getChartValue(kaiserslautern, 'kitas')
-        ],
-        itemStyle: {
-          color: '#007bff'
-        },
-        barWidth: 20,
-        label: {
-          show: true,
-          position: 'inside',
-          color: 'white',
-          fontSize: 11,
-          fontWeight: 'bold',
-          formatter: '{c}'
-        }
-      }
-    ],
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      },
-      formatter: function(params: any) {
-        let result = '';
-        params.forEach((item: any) => {
-          result += `${item.seriesName}: ${item.value} pro 100 Kinder<br/>`;
-        });
-        return result;
-      }
+  formatValue(value: number, unit: string): string {
+    if (unit === '%') {
+      return `${value.toFixed(1)}%`;
     }
-  };
-
-  this.chart.setOption(option);
-}
-
-  // Legacy methods für Kompatibilität (falls noch verwendet)
-  getDifference(indicator: keyof District): string {
-    const mannheimValue = this.displayMannheimDistrict[indicator] as number;
-    const kaiserslauternValue = this.displayKaiserslauternDistrict[indicator] as number;
-    const diff = mannheimValue - kaiserslauternValue;
-
-    if (diff > 0) {
-      return `+${diff.toFixed(indicator === 'kinderanteil' ? 1 : 0)}`;
-    } else if (diff < 0) {
-      return diff.toFixed(indicator === 'kinderanteil' ? 1 : 0);
-    } else {
-      return '0';
-    }
-  }
-
-  getDifferenceClass(indicator: keyof District): string {
-    const mannheimValue = this.displayMannheimDistrict[indicator] as number;
-    const kaiserslauternValue = this.displayKaiserslauternDistrict[indicator] as number;
-    const diff = mannheimValue - kaiserslauternValue;
-
-    if (diff > 0) return 'positive';
-    if (diff < 0) return 'negative';
-    return 'neutral';
-  }
-
-  getDifferenceIndicator(indicator: keyof District): string {
-    const mannheimValue = this.displayMannheimDistrict[indicator] as number;
-    const kaiserslauternValue = this.displayKaiserslauternDistrict[indicator] as number;
-    const diff = mannheimValue - kaiserslauternValue;
-
-    if (diff > 0) return '↑';
-    if (diff < 0) return '↓';
-    return '=';
-  }
-
-  getTotalFacilities(district: District): number {
-    return district.kitas + district.grundschulen + district.kinderaerzte + district.spielplaetze;
+    return value.toFixed(1);
   }
 }

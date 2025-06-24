@@ -51,10 +51,10 @@ interface ChartData {
   imports: [CommonModule],
   template: `
     <div class="cards-container">
-      <h3 class="cards-title">Anzahl pro 100 Kinder</h3>
+      <!-- <h3 class="cards-title">Anzahl pro 100 Kinder</h3>
 
       <div class="cities-grid">
-        <!-- Mannheim Seite -->
+
         <div class="city-section mannheim-section">
           <div class="metrics-grid">
             <div
@@ -72,7 +72,7 @@ interface ChartData {
           </div>
         </div>
 
-        <!-- Kaiserslautern Seite -->
+
         <div class="city-section kaiserslautern-section">
           <div class="metrics-grid">
             <div
@@ -89,29 +89,29 @@ interface ChartData {
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
-      <!-- Bar Chart Section - nur anzeigen wenn nicht "Gesamt"
+      <!-- Bar Chart Section - nur anzeigen wenn nicht "Gesamt" -->
       <div class="chart-section" *ngIf="!isGesamtSelected()">
         <h4 class="chart-title">Vergleich mit Durchschnittswerten</h4>
         <div class="chart-container">
           <div class="chart-item" *ngFor="let data of getChartData()">
             <div class="chart-label">{{ data.label }}</div>
             <div class="chart-bars">
-
+              <!-- Mannheim Bar -->
               <div class="bar-container mannheim-bar">
                 <div class="bar-background">
                   <div
                     class="bar-fill mannheim-fill"
                     [style.width.%]="(data.mannheimValue / data.maxValue) * 100"
                   ></div>
-
+                  <!-- Durchschnittslinie Mannheim -->
                   <div
                     class="avg-line mannheim-avg-line"
                     [style.left.%]="(data.mannheimAvg / data.maxValue) * 100"
                     [title]="'Durchschnitt Mannheim: ' + data.mannheimAvg.toFixed(1)"
                   ></div>
-
+                  <!-- Durchschnittslinie beide Städte -->
                   <div
                     class="avg-line both-cities-avg-line"
                     [style.left.%]="(data.bothCitiesAvg / data.maxValue) * 100"
@@ -121,20 +121,20 @@ interface ChartData {
                 <div class="bar-value mannheim-value">{{ data.mannheimValue.toFixed(1) }}</div>
               </div>
 
-
+              <!-- Kaiserslautern Bar -->
               <div class="bar-container kaiserslautern-bar">
                 <div class="bar-background">
                   <div
                     class="bar-fill kaiserslautern-fill"
                     [style.width.%]="(data.kaiserslauternValue / data.maxValue) * 100"
                   ></div>
-
+                  <!-- Durchschnittslinie Kaiserslautern -->
                   <div
                     class="avg-line kaiserslautern-avg-line"
                     [style.left.%]="(data.kaiserslauternAvg / data.maxValue) * 100"
                     [title]="'Durchschnitt Kaiserslautern: ' + data.kaiserslauternAvg.toFixed(1)"
                   ></div>
-
+                  <!-- Durchschnittslinie beide Städte -->
                   <div
                     class="avg-line both-cities-avg-line"
                     [style.left.%]="(data.bothCitiesAvg / data.maxValue) * 100"
@@ -145,10 +145,10 @@ interface ChartData {
               </div>
             </div>
           </div>
-        </div> -->
+        </div>
 
         <!-- Legende -->
-        <!-- <div class="legend">
+        <div class="legend">
           <div class="legend-item">
             <div class="legend-color mannheim-avg-line"></div>
             <span>Durchschnitt Mannheim</span>
@@ -162,7 +162,7 @@ interface ChartData {
             <span>Durchschnitt beide Städte</span>
           </div>
         </div>
-      </div>-->
+      </div>
     </div>
   `,
   styles: [
@@ -192,7 +192,7 @@ interface ChartData {
       .city-section {
         padding: 15px;
         border-radius: 8px;
-        background: #f8f9fa;
+      //  background: #f8f9fa;
       }
 
       .mannheim-section {
@@ -438,7 +438,7 @@ interface ChartData {
     `,
   ],
 })
-export class ComparisonCardsComponent implements OnInit, OnChanges {
+export class ComparisonChartComponent implements OnInit, OnChanges {
   @Input() mannheimDistrict: District | null = null;
   @Input() kaiserslauternDistrict: District | null = null;
 

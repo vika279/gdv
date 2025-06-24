@@ -94,7 +94,7 @@ declare var L: any;
 
     .map-header {
       padding: 20px 20px 10px 20px;
-      background: #f8f9fa;
+     // background: #f8f9fa;
       border-bottom: 1px solid #e9ecef;
     }
 
@@ -159,7 +159,7 @@ declare var L: any;
 
     .legend {
       padding: 20px;
-      background: #f8f9fa;
+     // background: #f8f9fa;
       border-top: 1px solid #e9ecef;
     }
 
@@ -235,7 +235,7 @@ declare var L: any;
     :host ::ng-deep .district-popup .heatmap-value {
       margin-bottom: 8px;
       padding: 4px 8px;
-      background: #f8f9fa;
+      //background: #f8f9fa;
       border-radius: 4px;
       font-size: 0.8rem;
       color: #495057;

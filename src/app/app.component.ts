@@ -72,7 +72,10 @@ export interface Facility {
 
         <!-- Vergleichstabelle -->
         <div class="table-container">
-          <h3>Absolute Werte</h3>
+    <!--      <app-comparison-cards
+            [mannheimDistrict]="selectedMannheim"
+            [kaiserslauternDistrict]="selectedKaiserslautern"
+         ></app-comparison-cards> -->
           <app-comparison-table
             [mannheimDistrict]="selectedMannheim"
             [kaiserslauternDistrict]="selectedKaiserslautern"
@@ -150,8 +153,12 @@ export interface Facility {
          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         display: flex;
         flex-direction: column;
-        padding-left: 30px;
+      //  padding-left: 30px;
           // border-right: 1px solid gray;
+          .chart-container{
+            margin-bottom: 7rem;
+
+          }
       }
 
       .main-content {

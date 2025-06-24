@@ -58,11 +58,11 @@ declare var echarts: any;
     }
 
     .legend-color.mannheim {
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg,rgb(245, 0, 0), #764ba2);
     }
 
     .legend-color.kaiserslautern {
-      background: linear-gradient(135deg, #f093fb, #f5576c);
+      background: linear-gradient(135deg,rgb(147, 199, 251),rgb(3, 99, 255));
     }
 
     @media (max-width: 768px) {
@@ -94,7 +94,7 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
     city: 'Mannheim',
     coordinates: [0, 0],
     index: 0,
-    color: '#667eea',
+    color: '#ff4d4d',
     kitas: 23.12,
     grundschulen: 1.42,
     kinderaerzte: 2.35,
@@ -122,7 +122,7 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
     city: 'Kaiserslautern',
     coordinates: [0, 0],
     index: 0,
-    color: '#f093fb',
+    color: '#3366ff',
     kitas: 8.89,
     grundschulen: 2.23,
     kinderaerzte: 2.53,
@@ -341,17 +341,17 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
         },
         splitArea: {
           areaStyle: {
-            color: ['rgba(114, 172, 209, 0.1)', 'rgba(114, 172, 209, 0.05)']
+            color: ['rgba(209, 114, 114, 0.1)', 'rgba(114, 172, 209, 0.05)']
           }
         },
         splitLine: {
           lineStyle: {
-            color: 'rgba(114, 172, 209, 0.3)'
+            color: 'rgba(209, 114, 114, 0.3)'
           }
         },
         axisLine: {
           lineStyle: {
-            color: 'rgba(114, 172, 209, 0.5)'
+            color: 'rgba(209, 114, 114, 0.5)'
           }
         }
       },
@@ -364,15 +364,15 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
               value: mannheimChartData,
               name: mannheimDistrict.name,
               areaStyle: {
-                color: 'rgba(102, 126, 234, 0.2)'
+                color: 'rgba(234, 102, 102, 0.2)'
               },
               lineStyle: {
-                color: '#667eea',
+                color: '#ff4d4d',
                 width: 3
               },
               itemStyle: {
-                color: '#667eea',
-                borderColor: '#667eea',
+                color: '#ff4d4d',
+                borderColor: '#ff4d4d',
                 borderWidth: 2
               }
             }
@@ -386,15 +386,15 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
               value: kaiserslauternChartData,
               name: kaiserslauternDistrict.name,
               areaStyle: {
-                color: 'rgba(240, 147, 251, 0.2)'
+                color: 'rgba(51, 102, 255, 0.2)'
               },
               lineStyle: {
-                color: '#f093fb',
+                color: '#3366ff',
                 width: 3
               },
               itemStyle: {
-                color: '#f093fb',
-                borderColor: '#f093fb',
+                color:'#3366ff',
+                borderColor:'#3366ff',
                 borderWidth: 2
               }
             }
