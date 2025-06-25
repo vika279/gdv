@@ -341,17 +341,17 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
         },
         splitArea: {
           areaStyle: {
-            color: ['rgba(209, 114, 114, 0.1)', 'rgba(114, 172, 209, 0.05)']
+            color: ['#f1f3f4', 'rgba(114, 172, 209, 0.05)']
           }
         },
         splitLine: {
           lineStyle: {
-            color: 'rgba(209, 114, 114, 0.3)'
+            color: 'rgba(110, 110, 110, 0.3)'
           }
         },
         axisLine: {
           lineStyle: {
-            color: 'rgba(209, 114, 114, 0.5)'
+            color: 'rgba(175, 175, 175, 0.5)'
           }
         }
       },

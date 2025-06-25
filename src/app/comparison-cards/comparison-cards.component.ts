@@ -192,15 +192,15 @@ interface ChartData {
       .city-section {
         padding: 15px;
         border-radius: 8px;
-        background: #f8f9fa;
+      //  background: #f8f9fa;
       }
 
       .mannheim-section {
-        border-left: 4px solid #dc3545;
+       // border-left: 4px solid #dc3545;
       }
 
       .kaiserslautern-section {
-        border-left: 4px solid #007bff;
+       // border-left: 4px solid #007bff;
       }
 
       .metrics-grid {
@@ -379,7 +379,7 @@ interface ChartData {
         gap: 30px;
         margin-top: 20px;
         padding: 15px;
-        background: #f8f9fa;
+       // background: #f8f9fa;
         border-radius: 8px;
       }
 
