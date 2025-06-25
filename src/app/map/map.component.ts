@@ -18,6 +18,8 @@ declare var L: any;
   selector: 'app-map',
   standalone: true,
   imports: [CommonModule],
+
+  // TEMPLATE:
   template: `
     <div class="maps-container">
       <div class="map-wrapper">
@@ -45,16 +47,16 @@ declare var L: any;
               {{ getMannheimAverageRating() }}/5
             </div>
           </div>
-        </div>
-        <div class="legend">
-          <div class="legend-title">Kinderfreundlichkeit</div>
-          <div class="legend-scale">
-            <div class="legend-item" *ngFor="let item of mannheimLegend">
-              <div
-                class="legend-color"
-                [style.background-color]="item.color"
-              ></div>
-              <span>{{ item.value }}</span>
+          <div class="legend">
+            <div class="legend-title">Kinderfreundlichkeit</div>
+            <div class="legend-scale">
+              <div class="legend-item" *ngFor="let item of mannheimLegend">
+                <div
+                  class="legend-color"
+                  [style.background-color]="item.color"
+                ></div>
+                <span>{{ item.value }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -85,22 +87,27 @@ declare var L: any;
               {{ getKaiserslauternAverageRating() }}/5
             </div>
           </div>
-        </div>
-        <div class="legend">
-          <div class="legend-title">Kinderfreundlichkeit</div>
-          <div class="legend-scale">
-            <div class="legend-item" *ngFor="let item of kaiserslauternLegend">
+          <div class="legend">
+            <div class="legend-title">Kinderfreundlichkeit</div>
+            <div class="legend-scale">
               <div
-                class="legend-color"
-                [style.background-color]="item.color"
-              ></div>
-              <span>{{ item.value }}</span>
+                class="legend-item"
+                *ngFor="let item of kaiserslauternLegend"
+              >
+                <div
+                  class="legend-color"
+                  [style.background-color]="item.color"
+                ></div>
+                <span>{{ item.value }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   `,
+
+  // STYLES:
   styles: [
     `
       .maps-container {
@@ -121,7 +128,7 @@ declare var L: any;
       .map-wrapper {
         background: white;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         height: 100%;
         display: flex;
@@ -130,7 +137,6 @@ declare var L: any;
 
       .map-header {
         padding: 20px 20px 10px 20px;
-       // border-bottom: 1px solid #e9ecef;
         display: flex;
         gap: 40px;
       }
@@ -196,45 +202,50 @@ declare var L: any;
       }
 
       .legend {
-        padding: 20px;
-        border-top: 1px solid #e9ecef;
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background: white;
+        padding: 12px;
+        border-radius: 8px;
+        z-index: 1001;
       }
 
       .legend-title {
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         color: #333;
-        margin-bottom: 10px;
-        text-align: right;
+        margin-bottom: 8px;
+        text-align: left;
       }
 
       .legend-scale {
         display: flex;
-        justify-content: end;
-        align-items: right;
+        align-items: center;
+        gap: 8px;
       }
 
       .legend-item {
         display: flex;
         flex-direction: column;
         align-items: center;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         color: #666;
       }
 
       .legend-color {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
         border-radius: 2px;
-        margin-bottom: 4px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        margin-bottom: 2px;
+        // border: 1px solid rgba(255, 255, 255, 0.3);
       }
 
       /* Leaflet Overrides */
       :host ::ng-deep .leaflet-popup-content-wrapper {
         background: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        //  border-radius: 8px;
+        // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
 
       :host ::ng-deep .leaflet-popup-content {
@@ -259,16 +270,6 @@ declare var L: any;
         margin-bottom: 10px;
       }
 
-      :host ::ng-deep .district-popup .popup-index {
-        padding: 6px 12px;
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        color: white;
-        border-radius: 6px;
-        text-align: center;
-        font-weight: bold;
-        font-size: 0.9rem;
-      }
-
       :host ::ng-deep .district-popup .heatmap-value {
         margin-bottom: 8px;
         padding: 4px 8px;
@@ -284,9 +285,7 @@ declare var L: any;
 
       :host ::ng-deep .leaflet-container {
         background: white !important;
-        outline-offset: 1px;
-        // height: 100% !important;
-        // width: 100% !important;
+        // outline-offset: 1px;
       }
 
       :host ::ng-deep .leaflet-control-attribution {
@@ -324,10 +323,10 @@ declare var L: any;
       :host ::ng-deep .custom-marker:hover {
         transform: scale(1.1);
       }
+
       #map-mannheim {
-  // transform: scale(1.25);
-  transform-origin: center;
-}
+        transform-origin: center;
+      }
     `,
   ],
 })
@@ -443,10 +442,8 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   private applyTransparencyEffect(selectedDistrictId: string, city: string) {
-    // ÄNDERUNG: Beide Karten gleichzeitig behandeln
-
-    // Mannheim Karte
-    if (this.mannheimGeoJsonLayer) {
+    // Nur die ausgewählte Stadt behandeln
+    if (city === 'mannheim' && this.mannheimGeoJsonLayer) {
       this.mannheimGeoJsonLayer.eachLayer((featureLayer: any) => {
         const feature = featureLayer.feature;
         const districtName = this.getDistrictNameFromFeature(
@@ -459,18 +456,15 @@ export class MapComponent implements OnInit, OnDestroy {
         );
 
         if (matchingDistrict) {
-          if (
-            city === 'mannheim' &&
-            matchingDistrict.id === selectedDistrictId
-          ) {
-            // Ausgewählter Bezirk in Mannheim
+          if (matchingDistrict.id === selectedDistrictId) {
+            // Ausgewählter Bezirk - normal sichtbar
             featureLayer.setStyle({
               fillOpacity: 0.9,
               weight: 3,
               className: 'district-polygon-selected',
             });
           } else {
-            // Alle anderen Bezirke in Mannheim - transparent
+            // Andere Bezirke - transparent
             featureLayer.setStyle({
               fillOpacity: 0.3,
               weight: 1,
@@ -479,10 +473,7 @@ export class MapComponent implements OnInit, OnDestroy {
           }
         }
       });
-    }
-
-    // Kaiserslautern Karte
-    if (this.kaiserslauternGeoJsonLayer) {
+    } else if (city === 'kaiserslautern' && this.kaiserslauternGeoJsonLayer) {
       this.kaiserslauternGeoJsonLayer.eachLayer((featureLayer: any) => {
         const feature = featureLayer.feature;
         const districtName = this.getDistrictNameFromFeature(
@@ -495,18 +486,15 @@ export class MapComponent implements OnInit, OnDestroy {
         );
 
         if (matchingDistrict) {
-          if (
-            city === 'kaiserslautern' &&
-            matchingDistrict.id === selectedDistrictId
-          ) {
-            // Ausgewählter Bezirk in Kaiserslautern
+          if (matchingDistrict.id === selectedDistrictId) {
+            // Ausgewählter Bezirk - normal sichtbar
             featureLayer.setStyle({
               fillOpacity: 0.9,
               weight: 3,
               className: 'district-polygon-selected',
             });
           } else {
-            // Alle anderen Bezirke in Kaiserslautern - transparent
+            // Andere Bezirke - transparent
             featureLayer.setStyle({
               fillOpacity: 0.3,
               weight: 1,
@@ -518,12 +506,9 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 4. RESET-FUNKTION FIX - Ändere resetAllDistrictsVisibility():
   private resetAllDistrictsVisibility(city: string) {
-    // ÄNDERUNG: Beide Karten zurücksetzen, nicht nur die ausgewählte Stadt
-
-    // Mannheim zurücksetzen
-    if (this.mannheimGeoJsonLayer) {
+    // Nur die entsprechende Stadt zurücksetzen
+    if (city === 'mannheim' && this.mannheimGeoJsonLayer) {
       this.mannheimGeoJsonLayer.eachLayer((featureLayer: any) => {
         featureLayer.setStyle({
           fillOpacity: 0.8,
@@ -531,10 +516,7 @@ export class MapComponent implements OnInit, OnDestroy {
           className: 'district-polygon',
         });
       });
-    }
-
-    // Kaiserslautern zurücksetzen
-    if (this.kaiserslauternGeoJsonLayer) {
+    } else if (city === 'kaiserslautern' && this.kaiserslauternGeoJsonLayer) {
       this.kaiserslauternGeoJsonLayer.eachLayer((featureLayer: any) => {
         featureLayer.setStyle({
           fillOpacity: 0.8,
@@ -542,13 +524,6 @@ export class MapComponent implements OnInit, OnDestroy {
           className: 'district-polygon',
         });
       });
-    }
-
-    // Dropdown-Werte zurücksetzen
-    if (city === 'mannheim') {
-      this.selectedMannheimDistrict = '';
-    } else {
-      this.selectedKaiserslauternDistrict = '';
     }
   }
 
@@ -601,44 +576,46 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-private initMaps() {
-const staticMapOptions = {
-    zoomControl: false,
-    doubleClickZoom: false,
-    scrollWheelZoom: false,
-    boxZoom: false,
-    keyboard: false,
-    dragging: false,
-    touchZoom: false,
-    attributionControl: true,
-  };
+  private initMaps() {
+    const staticMapOptions = {
+      zoomControl: false,
+      doubleClickZoom: false,
+      scrollWheelZoom: false,
+      boxZoom: false,
+      keyboard: false,
+      dragging: false,
+      touchZoom: false,
+      attributionControl: false,
+    };
 
-  // MANNHEIM - Mit größeren Bounds (zeigt mehr Gebiet = kleiner wirkend)
-  this.mapMannheim = L.map('map-mannheim', staticMapOptions);
+    // MANNHEIM - Mit größeren Bounds (zeigt mehr Gebiet = kleiner wirkend)
+    this.mapMannheim = L.map('map-mannheim', staticMapOptions);
 
-  // Größerer Bereich um Mannheim (macht Karte "kleiner")
-  const mannheimBounds = L.latLngBounds(
-    [49.43, 8.42],  // Südwest
-    [49.54, 8.56]   // Nordost
-  );
-  this.mapMannheim.fitBounds(mannheimBounds);
+    // Größerer Bereich um Mannheim (macht Karte "kleiner")
+    const mannheimBounds = L.latLngBounds(
+      [49.43, 8.42], // Südwest
+      [49.54, 8.56] // Nordost
+    );
+    this.mapMannheim.fitBounds(mannheimBounds);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
-    opacity: 0.0,
-  }).addTo(this.mapMannheim);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      opacity: 0.0,
+    }).addTo(this.mapMannheim);
 
-  // KAISERSLAUTERN - Normaler Zoom
-  this.mapKaiserslautern = L.map('map-kaiserslautern', staticMapOptions)
-    .setView([49.4447, 7.7689], 12);
+    // KAISERSLAUTERN - Normaler Zoom
+    this.mapKaiserslautern = L.map(
+      'map-kaiserslautern',
+      staticMapOptions
+    ).setView([49.4447, 7.7689], 12);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
-    opacity: 0.0,
-  }).addTo(this.mapKaiserslautern);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      opacity: 0.0,
+    }).addTo(this.mapKaiserslautern);
 
-  this.loadGeoJsonData();
-}
+    this.loadGeoJsonData();
+  }
 
   private addCirclesForCity(cityName: string) {
     const districts =
@@ -660,14 +637,6 @@ const staticMapOptions = {
       const popupContent = `
         <div class="district-popup">
           <h4>${district.name}</h4>
-          <div class="popup-stats">
-            <div>Kitas: ${district.kitas}</div>
-            <div>Schulen: ${district.grundschulen}</div>
-            <div>Kinderärzte: ${district.kinderaerzte}</div>
-            <div>Spielplätze: ${district.spielplaetze}</div>
-            <div>Kinderanteil: ${district.kinderanteil}%</div>
-          </div>
-          <div class="popup-index">Index: ${district.index}/5</div>
         </div>
       `;
 
@@ -757,7 +726,7 @@ const staticMapOptions = {
       'Grübentälchen/Volkspark': 2,
       Betzenberg: 4,
       'Lämmchesberg/Uniwohnstadt': 5,
-      'Bännjerrück\/Karl-Pfaff-S.`': 3,
+      'Bännjerrück/Karl-Pfaff-S.`': 3,
       'Kaiserslautern-West': 4,
     };
 
@@ -779,7 +748,7 @@ const staticMapOptions = {
           2: '#6bb6ff',
           1: '#add8e6',
         };
-        return colorMap[value] || '#cccccc';
+        return colorMap[value] || '#zzzzg';
       }
       return '#cccccc';
     };
@@ -800,9 +769,9 @@ const staticMapOptions = {
           fillColor =
             heatmapValue > 0
               ? getHeatmapColor(heatmapValue, cityName)
-              : '#cccccc';
+              : 'black';
         } else {
-          fillColor = '#cccccc';
+          fillColor = 'red';
         }
 
         return {
@@ -819,33 +788,7 @@ const staticMapOptions = {
         const district = this.findMatchingDistrict(districtName, districts);
 
         if (district) {
-          const heatmapValue =
-            cityName === 'Mannheim'
-              ? mannheimHeatmapData[districtName] || 0
-              : cityName === 'Kaiserslautern'
-              ? kaiserslauternHeatmapData[districtName] || 0
-              : 0;
-
-          const popupContent = `
-            <div class="district-popup">
-              <h4>${district.name}</h4>
-              ${
-                (cityName === 'Mannheim' || cityName === 'Kaiserslautern') &&
-                heatmapValue > 0
-                  ? `<div class="heatmap-value"><strong>Bewertung: ${heatmapValue}/5</strong></div>`
-                  : ''
-              }
-              <div class="popup-stats">
-                <div>Kitas: ${district.kitas}</div>
-                <div>Schulen: ${district.grundschulen}</div>
-                <div>Kinderärzte: ${district.kinderaerzte}</div>
-                <div>Spielplätze: ${district.spielplaetze}</div>
-                <div>Kinderanteil: ${district.kinderanteil}%</div>
-              </div>
-              <div class="popup-index">Index: ${district.index}/5</div>
-            </div>
-          `;
-          layer.bindPopup(popupContent);
+          // Nur Click-Event für Auswahl
           layer.on('click', () => {
             this.selectDistrict(
               district,
@@ -854,7 +797,7 @@ const staticMapOptions = {
           });
         }
 
-        // Hover-Effekte
+        // Hover-Effekte mit einfachem Tooltip
         layer.on({
           mouseover: (e: any) => {
             const layer = e.target;
@@ -862,6 +805,12 @@ const staticMapOptions = {
               fillOpacity: 0.9,
               weight: 3,
               color: '#ffffff',
+            });
+            layer.bindTooltip(districtName, {
+              direction: 'top',
+              className: 'district-tooltip',
+              opacity: 0.9,
+              permanent: true,
             });
           },
           mouseout: (e: any) => {
@@ -872,7 +821,6 @@ const staticMapOptions = {
             );
             const district = this.findMatchingDistrict(districtName, districts);
 
-            // ÄNDERUNG: Bessere Logik für Auswahl-Status
             const isSelected =
               district &&
               ((cityName === 'Mannheim' &&
@@ -893,6 +841,9 @@ const staticMapOptions = {
               weight: isSelected ? 3 : 2,
               color: '#ffffff',
             });
+
+            // Tooltip schließen
+            layer.closeTooltip();
           },
         });
       },

@@ -240,7 +240,7 @@ interface ChartData {
       }
 
       .both-cities-avg-line {
-        background: #666;
+        background:rgb(147, 148, 148);
 
       }
 
