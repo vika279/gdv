@@ -52,12 +52,16 @@ interface ChartData {
   template: `
     <div class="cards-container">
       <h3 class="cards-title">{{ getChartTitle() }}</h3>
-<!-- {{getChartData()| json}} -->
-      <!-- Bar Chart Section - immer anzeigen -->
+
+      <!-- Bar Chart Section -->
       <div class="chart-section">
         <div class="chart-container">
           <div class="chart-item" *ngFor="let data of getChartData()">
-            <div class="chart-label">{{ data.label }}</div>
+            <div class="chart-label">
+              {{ data.label }}
+              <span *ngIf="data.label === 'Kitaplätze' || data.label === 'Grundschulplätze'"
+                    [class]="'value-asterisk ' + (isMannheimDistrictSelected() ? 'mannheim-asterisk' : 'kaiserslautern-asterisk')">*</span>
+            </div>
             <div class="chart-bars">
               <!-- Mannheim Bar -->
               <div class="bar-container mannheim-bar">
@@ -66,22 +70,28 @@ interface ChartData {
                     class="bar-fill mannheim-fill"
                     [style.width.%]="(data.mannheimValue / data.maxValue) * 100"
                   ></div>
-                  <!-- Durchschnittslinie Mannheim - nur wenn Stadtteile ausgewählt -->
+                  <!-- Durchschnittslinie Mannheim -->
                   <div
-                    *ngIf="hasDistrictsSelected()"
+                    *ngIf="isMannheimDistrictSelected()"
                     class="avg-line mannheim-avg-line"
                     [style.left.%]="(data.mannheimAvg / data.maxValue) * 100"
                     [title]="'Durchschnitt Mannheim: ' + data.mannheimAvg.toFixed(1)"
                   ></div>
-                  <!-- Durchschnittslinie beide Städte - nur wenn Stadtteile ausgewählt -->
+                  <!-- Durchschnittslinie beide Städte -->
                   <div
-                    *ngIf="hasDistrictsSelected()"
+                    *ngIf="isMannheimDistrictSelected()"
                     class="avg-line both-cities-avg-line"
                     [style.left.%]="(data.bothCitiesAvg / data.maxValue) * 100"
                     [title]="'Durchschnitt beide Städte: ' + data.bothCitiesAvg.toFixed(1)"
                   ></div>
                 </div>
-                <div class="bar-value mannheim-value">{{ data.mannheimValue.toFixed(1) }}</div>
+                <div class="values-container">
+                  <div class="bar-value mannheim-value">{{ data.mannheimValue.toFixed(1) }}</div>
+                  <ng-container *ngIf="isMannheimDistrictSelected()">
+                    <div class="avg-value mannheim-avg-value">{{ data.mannheimAvg.toFixed(1) }}</div>
+                    <div class="avg-value both-cities-avg-value">{{ data.bothCitiesAvg.toFixed(1) }}</div>
+                  </ng-container>
+                </div>
               </div>
 
               <!-- Kaiserslautern Bar -->
@@ -91,40 +101,51 @@ interface ChartData {
                     class="bar-fill kaiserslautern-fill"
                     [style.width.%]="(data.kaiserslauternValue / data.maxValue) * 100"
                   ></div>
-                  <!-- Durchschnittslinie Kaiserslautern - nur wenn Stadtteile ausgewählt -->
+                  <!-- Durchschnittslinie Kaiserslautern -->
                   <div
-                    *ngIf="hasDistrictsSelected()"
+                    *ngIf="isKaiserslauternDistrictSelected()"
                     class="avg-line kaiserslautern-avg-line"
                     [style.left.%]="(data.kaiserslauternAvg / data.maxValue) * 100"
                     [title]="'Durchschnitt Kaiserslautern: ' + data.kaiserslauternAvg.toFixed(1)"
                   ></div>
-                  <!-- Durchschnittslinie beide Städte - nur wenn Stadtteile ausgewählt -->
+                  <!-- Durchschnittslinie beide Städte -->
                   <div
-                    *ngIf="hasDistrictsSelected()"
+                    *ngIf="isKaiserslauternDistrictSelected()"
                     class="avg-line both-cities-avg-line"
                     [style.left.%]="(data.bothCitiesAvg / data.maxValue) * 100"
                     [title]="'Durchschnitt beide Städte: ' + data.bothCitiesAvg.toFixed(1)"
                   ></div>
                 </div>
-                <div class="bar-value kaiserslautern-value">{{ data.kaiserslauternValue.toFixed(1) }}</div>
+                <div class="values-container">
+                  <div class="bar-value kaiserslautern-value">{{ data.kaiserslauternValue.toFixed(1) }}</div>
+                  <ng-container *ngIf="isKaiserslauternDistrictSelected()">
+                    <div class="avg-value kaiserslautern-avg-value">{{ data.kaiserslauternAvg.toFixed(1) }}</div>
+                    <div class="avg-value both-cities-avg-value">{{ data.bothCitiesAvg.toFixed(1) }}</div>
+                  </ng-container>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Legende - nur anzeigen wenn Stadtteile ausgewählt sind -->
-        <div class="legend" *ngIf="hasDistrictsSelected()">
-          <div class="legend-item">
-            <div class="legend-color mannheim-avg-line"></div>
-            <span>Durchschnitt Mannheim</span>
+        <!-- Legende - Durchschnittswerte nur wenn Stadtteile ausgewählt -->
+        <div class="legend">
+          <div class="legend-averages" *ngIf="hasDistrictsSelected()">
+            <div class="legend-item" *ngIf="isMannheimDistrictSelected()">
+              <div class="legend-color mannheim-avg-line"></div>
+              <span>Durchschnitt Mannheim</span>
+            </div>
+            <div class="legend-item" *ngIf="isKaiserslauternDistrictSelected()">
+              <div class="legend-color kaiserslautern-avg-line"></div>
+              <span>Durchschnitt Kaiserslautern</span>
+            </div>
+            <div class="legend-item" *ngIf="hasDistrictsSelected()">
+              <div class="legend-color both-cities-avg-line"></div>
+              <span>Durchschnitt beide Städte</span>
+            </div>
           </div>
-          <div class="legend-item">
-            <div class="legend-color kaiserslautern-avg-line"></div>
-            <span>Durchschnitt Kaiserslautern</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color both-cities-avg-line"></div>
-            <span>Durchschnitt beide Städte</span>
+          <div class="legend-note">
+            * Die Werte wurden pro 100 Kinder berechnet
           </div>
         </div>
       </div>
@@ -133,11 +154,9 @@ interface ChartData {
   styles: [
     `
       .cards-container {
-
         border-radius: 12px;
         padding-left: 4rem;
         padding-top: 1rem;
-
       }
 
       .cards-title {
@@ -233,16 +252,21 @@ interface ChartData {
       }
 
       .mannheim-avg-line {
-        background:rgb(255, 113, 5);
+        background: #ff9800;
       }
 
       .kaiserslautern-avg-line {
-        background:rgb(5, 88, 255);
+        background: #1a237e;
       }
 
       .both-cities-avg-line {
-        background:rgb(147, 148, 148);
+        background: #757575;
+      }
 
+      .values-container {
+        display: flex;
+        gap: 10px;
+        min-width: 150px;
       }
 
       .bar-value {
@@ -252,12 +276,37 @@ interface ChartData {
         font-weight: 600;
       }
 
+      .avg-value {
+        min-width: 50px;
+        text-align: left;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .mannheim-avg-value {
+        color: #ff9800;
+      }
+
+      .kaiserslautern-avg-value {
+        color: #1a237e;
+      }
+
+      .both-cities-avg-value {
+        color: #757575;
+      }
+
       /* Legend */
       .legend {
         display: flex;
-        gap: 15px;
+        flex-direction: column;
         margin-top: 2rem;
         border-radius: 8px;
+      }
+
+      .legend-averages {
+        display: flex;
+        gap: 15px;
+        align-items: center;
       }
 
       .legend-item {
@@ -273,6 +322,20 @@ interface ChartData {
         height: 3px;
         border-radius: 2px;
       }
+
+      .legend-note {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.5rem;
+        font-style: italic;
+      }
+
+      .value-asterisk {
+        margin-left: 2px;
+        font-size: 0.8rem;
+      }
+
+
 
       @media (max-width: 968px) {
         .chart-item {
@@ -294,6 +357,10 @@ interface ChartData {
           width: 250px; /* Kleinere fixierte Breite für mobile Geräte */
         }
 
+        .values-container {
+          min-width: 120px;
+        }
+
         .legend {
           flex-direction: column;
           gap: 10px;
@@ -308,6 +375,15 @@ interface ChartData {
         .bar-background {
           width: 200px; /* Noch kleinere Breite für sehr kleine Bildschirme */
         }
+
+        .values-container {
+          min-width: 100px;
+          flex-direction: column;
+        }
+
+        .avg-value {
+          font-size: 0.8rem;
+        }
       }
     `,
   ],
@@ -319,66 +395,66 @@ export class ComparisonTableComponent implements OnInit, OnChanges {
   // Default-Werte für Gesamtdaten
   private defaultMannheimDistrict: ExtendedDistrict = {
     name: 'Gesamt',
-    kitas: 23,
-    grundschulen: 1,
-    kinderaerzte: 2,
-    spielplaetze: 2,
-    kinderanteil: 9.6,
-    index: 2.1,
+    city: 'Mannheim',
+    kitas: 525.53,
+    grundschulen: 613.12,
+    kinderaerzte: 2.18,
+    spielplaetze: 23.12,
+    kinderanteil: 9.57,
+    index: 2.62,
     coordinates: [49.4875, 8.466],
-    Kitas_pro_100: 9,
-    Grundschulen_pro_100: 6,
-    Kinderärzte_pro_100: 1,
-    Spielplätze_pro_100: 5,
-    '%0-10': 7,
-    Index_gesamt: 4,
-    id: '',
-    city: '',
+    Kitas_pro_100: 49,
+    Grundschulen_pro_100: 88.71,
+    Kinderärzte_pro_100: 0.13,
+    Spielplätze_pro_100: 1.42,
+    '%0-10': 9.57,
+    Index_gesamt: 2.62,
+    id: 'ma-gesamt',
     color: '',
-    kitasIndex: 0,
+    kitasIndex: 2.37,
     grundschulenIndex: 0,
-    kinderaerzteIndex: 0,
-    spielplaetzeIndex: 0,
+    kinderaerzteIndex: 2.07,
+    spielplaetzeIndex: 2.35,
     gesamt_kinder: 0,
-    kinder_0_6: 0,
-    kinder_6_10: 0,
-    kinder_0_10: 0,
-    kinderanteilIndex: 0,
-    gesamt_Einwohner: 0,
-    avg_index: 0,
-    kinder_grundschule: 0,
+    kinder_0_6: 1165.24,
+    kinder_6_10: 681.41,
+    kinder_0_10: 1846.65,
+    kinderanteilIndex: 3.17,
+    gesamt_Einwohner: 19332.18,
+    avg_index: 2.51,
+    kinder_grundschule: 88.71
   };
 
   private defaultKaiserslauternDistrict: ExtendedDistrict = {
     name: 'Gesamt',
-    kitas: 9,
-    grundschulen: 2,
-    kinderaerzte: 3,
-    spielplaetze: 0,
-    kinderanteil: 8.3,
-    index: 1.4,
+    city: 'Kaiserslautern',
+    kitas: 189.2,
+    grundschulen: 168.72,
+    kinderaerzte: 0.33,
+    spielplaetze: 8.89,
+    kinderanteil: 8.31,
+    index: 2.47,
     coordinates: [49.4401, 7.7491],
-    Kitas_pro_100: 7,
-    Grundschulen_pro_100: 8,
-    Kinderärzte_pro_100: 2,
-    Spielplätze_pro_100: 6,
-    '%0-10': 5,
-    Index_gesamt: 3,
-    id: '',
-    city: '',
+    Kitas_pro_100: 69.57,
+    Grundschulen_pro_100: 87.68,
+    Kinderärzte_pro_100: 0.05,
+    Spielplätze_pro_100: 2.23,
+    '%0-10': 8.31,
+    Index_gesamt: 2.47,
+    id: 'kl-gesamt',
     color: '',
-    kitasIndex: 0,
+    kitasIndex: 2.66,
     grundschulenIndex: 0,
-    kinderaerzteIndex: 0,
-    spielplaetzeIndex: 0,
+    kinderaerzteIndex: 1.43,
+    spielplaetzeIndex: 2.53,
     gesamt_kinder: 0,
-    kinder_0_6: 0,
-    kinder_6_10: 0,
-    kinder_0_10: 0,
-    kinderanteilIndex: 0,
-    gesamt_Einwohner: 0,
-    avg_index: 0,
-    kinder_grundschule: 0,
+    kinder_0_6: 264.06,
+    kinder_6_10: 191,
+    kinder_0_10: 455.06,
+    kinderanteilIndex: 2.51,
+    gesamt_Einwohner: 5644.28,
+    avg_index: 2.24,
+    kinder_grundschule: 87.68
   };
 
   // Durchschnittswerte für die Städte (diese sollten aus Ihren Daten kommen)
@@ -430,12 +506,21 @@ export class ComparisonTableComponent implements OnInit, OnChanges {
     return 'Gesamtvergleich der Städte';
   }
 
-  // Prüft ob mindestens ein Stadtteil ausgewählt ist (nicht "Gesamt")
+  // Hilfsmethoden für die Stadtauswahl
+  isMannheimDistrictSelected(): boolean {
+    return this.mannheimDistrict !== null && this.mannheimDistrict.name !== 'Gesamt';
+  }
+
+  isKaiserslauternDistrictSelected(): boolean {
+    return this.kaiserslauternDistrict !== null && this.kaiserslauternDistrict.name !== 'Gesamt';
+  }
+
+  areBothDistrictsSelected(): boolean {
+    return this.isMannheimDistrictSelected() && this.isKaiserslauternDistrictSelected();
+  }
+
   hasDistrictsSelected(): boolean {
-    return (
-      (this.mannheimDistrict !== null && this.mannheimDistrict.name !== 'Gesamt') ||
-      (this.kaiserslauternDistrict !== null && this.kaiserslauternDistrict.name !== 'Gesamt')
-    );
+    return this.isMannheimDistrictSelected() || this.isKaiserslauternDistrictSelected();
   }
 
   getMannheimScore(): number {
@@ -451,19 +536,15 @@ export class ComparisonTableComponent implements OnInit, OnChanges {
   private getChartValue(district: ExtendedDistrict, field: string): number {
     switch (field) {
       case 'kitas':
-        return (
-          district.Kitas_pro_100 ||
-          (district.kitas / district.kinder_0_6) * 100 ||
-          0
-        );
+        return district.Kitas_pro_100 || (district.kitas / district.kinder_0_6) * 100 || 0;
       case 'grundschulen':
-        return (
-          district.Grundschulen_pro_100 || district.kinder_grundschule || 0
-        );
+        return district.Grundschulen_pro_100 || district.kinder_grundschule || 0;
       case 'kinderaerzte':
-        return district['Kinderärzte_pro_100'] || district.kinderaerzte || 0;
+        // Absolute Zahlen für Kinderärzte
+        return district.kinderaerzte || 0;
       case 'spielplaetze':
-        return district['Spielplätze_pro_100'] || district.spielplaetze || 0;
+        // Absolute Zahlen für Spielplätze
+        return district.spielplaetze || 0;
       case 'kinderanteil':
         return district['%0-10'] || district.kinderanteil || 0;
       default:
@@ -553,60 +634,75 @@ export class ComparisonTableComponent implements OnInit, OnChanges {
       {
         field: 'kinderanteil',
         label: 'Kinderanteil',
-        mannheimAvg: this.mannheimAverages.kinderanteil,
-        kaiserslauternAvg: this.kaiserslauternAverages.kinderanteil
+        pro100Field: '%0-10',
+        useAbsolute: false
       },
       {
         field: 'kitas',
         label: 'Kitaplätze',
-        mannheimAvg: this.mannheimAverages.kitas,
-        kaiserslauternAvg: this.kaiserslauternAverages.kitas
+        pro100Field: 'Kitas_pro_100',
+        useAbsolute: false
       },
       {
         field: 'spielplaetze',
         label: 'Spielplätze',
-        mannheimAvg: this.mannheimAverages.spielplaetze,
-        kaiserslauternAvg: this.kaiserslauternAverages.spielplaetze
+        pro100Field: 'spielplaetze',
+        useAbsolute: true
       },
       {
         field: 'grundschulen',
         label: 'Grundschulplätze',
-        mannheimAvg: this.mannheimAverages.grundschulen,
-        kaiserslauternAvg: this.kaiserslauternAverages.grundschulen
+        pro100Field: 'Grundschulen_pro_100',
+        useAbsolute: false
       },
       {
         field: 'kinderaerzte',
         label: 'Kinderärzte',
-        mannheimAvg: this.mannheimAverages.kinderaerzte,
-        kaiserslauternAvg: this.kaiserslauternAverages.kinderaerzte
+        pro100Field: 'kinderaerzte',
+        useAbsolute: true
       }
     ];
 
     return metrics.map(metric => {
       const mannheimValue = this.getChartValue(mannheim, metric.field);
       const kaiserslauternValue = this.getChartValue(kaiserslautern, metric.field);
-      const bothCitiesAvg = (metric.mannheimAvg + metric.kaiserslauternAvg) / 2;
 
-      // Wenn keine Stadtteile ausgewählt sind, berücksichtige keine Durchschnittswerte für maxValue
-      let maxValue;
-      if (this.hasDistrictsSelected()) {
-        maxValue = Math.max(
-          mannheimValue,
-          kaiserslauternValue,
-          metric.mannheimAvg,
-          metric.kaiserslauternAvg,
-          bothCitiesAvg
-        ) * 1.1;
+      // Durchschnittswerte nur berechnen wenn entsprechender Stadtteil ausgewählt ist
+      let mannheimAvg = 0, kaiserslauternAvg = 0, bothCitiesAvg = 0;
+
+      // Berechne die Durchschnittswerte für beide Städte
+      if (metric.useAbsolute) {
+        mannheimAvg = this.getChartValue(this.defaultMannheimDistrict, metric.field);
+        kaiserslauternAvg = this.getChartValue(this.defaultKaiserslauternDistrict, metric.field);
       } else {
-        maxValue = Math.max(mannheimValue, kaiserslauternValue) * 1.1;
+        mannheimAvg = this.defaultMannheimDistrict[metric.pro100Field as keyof ExtendedDistrict] as number;
+        kaiserslauternAvg = this.defaultKaiserslauternDistrict[metric.pro100Field as keyof ExtendedDistrict] as number;
       }
+
+      // Gesamtdurchschnitt immer berechnen wenn ein Stadtteil ausgewählt ist
+      if (this.hasDistrictsSelected()) {
+        bothCitiesAvg = (mannheimAvg + kaiserslauternAvg) / 2;
+      }
+
+      // maxValue berechnen basierend auf den vorhandenen Werten
+      const valuesToConsider = [mannheimValue, kaiserslauternValue];
+      if (this.isMannheimDistrictSelected()) {
+        valuesToConsider.push(mannheimAvg);
+        valuesToConsider.push(bothCitiesAvg);
+      }
+      if (this.isKaiserslauternDistrictSelected()) {
+        valuesToConsider.push(kaiserslauternAvg);
+        valuesToConsider.push(bothCitiesAvg);
+      }
+
+      const maxValue = Math.max(...valuesToConsider) * 1.1;
 
       return {
         label: metric.label,
         mannheimValue,
         kaiserslauternValue,
-        mannheimAvg: metric.mannheimAvg,
-        kaiserslauternAvg: metric.kaiserslauternAvg,
+        mannheimAvg: this.isMannheimDistrictSelected() ? mannheimAvg : 0,
+        kaiserslauternAvg: this.isKaiserslauternDistrictSelected() ? kaiserslauternAvg : 0,
         bothCitiesAvg,
         maxValue
       };

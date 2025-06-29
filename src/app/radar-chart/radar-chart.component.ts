@@ -39,7 +39,6 @@ declare var echarts: any;
       display: flex;
       justify-content: center;
       gap: 30px;
-      margin-top: 15px;
       flex-wrap: wrap;
     }
 
@@ -58,11 +57,11 @@ declare var echarts: any;
     }
 
     .legend-color.mannheim {
-      background: linear-gradient(135deg,rgb(245, 0, 0), #764ba2);
+      background: linear-gradient(135deg,rgb(203, 7, 7),rgb(162, 75, 108));
     }
 
     .legend-color.kaiserslautern {
-      background: linear-gradient(135deg,rgb(147, 199, 251),rgb(3, 99, 255));
+      background: linear-gradient(135deg,rgb(1, 86, 171),rgb(3, 99, 255));
     }
 
     @media (max-width: 768px) {

@@ -124,7 +124,7 @@ export interface Facility {
         flex-direction: column;
         margin-right: 30px;
         .chart-container {
-          margin-bottom: 3rem;
+          margin-bottom: 2rem;
           h2{
             margin-left: 60px;
           }
@@ -252,6 +252,8 @@ export class AppComponent implements OnInit {
   districts: District[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
+  defaultMannheimDistrict: District | null = null;
+  defaultKaiserslauternDistrict: District | null = null;
 
   // Approximate coordinates for districts (you may want to adjust these)
   private readonly districtCoordinates: { [key: string]: [number, number] } = {
@@ -387,21 +389,17 @@ Mannheim;Wallstadt;23;3,38;5;2;0,29;3,42;254;95,13;2,45;231;55,93;2,84;7746;413;
   }
 
   private processDistrictData(csvData: any[]): District[] {
-    return csvData.map((row, index) => {
+    const districts = csvData.map((row, index) => {
       const districtName = row['Stadtbezirk'];
       const city = row['Stadt'];
-      const coordinates = this.districtCoordinates[districtName] || [
-        49.45, 7.77,
-      ]; // Fallback coordinates
+      const coordinates = this.districtCoordinates[districtName] || [49.45, 7.77]; // Fallback coordinates
 
       // Calculate overall index based on AVG column, scale to 1-5
       const avgIndex = row['AVG'] || 0;
       const scaledIndex = Math.max(1, Math.min(5, Math.round(avgIndex)));
 
-      return {
-        id: `${city.toLowerCase().substring(0, 2)}-${districtName
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, '-')}`,
+      const district: District = {
+        id: `${city.toLowerCase().substring(0, 2)}-${districtName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
         name: districtName,
         city: city,
         coordinates: coordinates,
@@ -426,7 +424,20 @@ Mannheim;Wallstadt;23;3,38;5;2;0,29;3,42;254;95,13;2,45;231;55,93;2,84;7746;413;
         gesamt_Einwohner: row['gesamt_Einwohner'] || 0,
         avg_index: row['AVG'] || 0,
       };
+
+      // Set default districts
+      if (city === 'Mannheim' && districtName === 'Innenstadt/Jungbusch') {
+        this.defaultMannheimDistrict = district;
+        this.selectedMannheim = district;
+      } else if (city === 'Kaiserslautern' && districtName === 'Innenstadt-Ost') {
+        this.defaultKaiserslauternDistrict = district;
+        this.selectedKaiserslautern = district;
+      }
+
+      return district;
     });
+
+    return districts;
   }
 
   private getColorForIndex(index: number): string {
