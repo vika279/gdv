@@ -31,7 +31,7 @@ declare var echarts: any;
 
     .chart {
       width: 100%;
-      height: 350px;
+      height: 500px;
       min-height: 350px;
     }
 
@@ -291,7 +291,7 @@ export class RadarChartComponent implements OnInit, OnChanges, OnDestroy {
 
     const option = {
       title: {
-        text: 'Kinderfreundlichkeits-Indikatoren',
+        // text: 'Kinderfreundlichkeits-Indikatoren',
         left: 'center',
         textStyle: {
           fontSize: 16,

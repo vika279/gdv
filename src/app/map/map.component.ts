@@ -30,8 +30,7 @@ declare var L: any;
             [value]="selectedMannheimDistrict"
             (change)="onDistrictChange($event, 'mannheim')"
           >
-            <!-- <option value="">Wählen Sie ein Stadtbezirk</option> -->
-            <option value="gesamt">Gesamt</option>
+            <option value="">Wählen Sie ein Stadtbezirk</option>
             <option
               *ngFor="let district of mannheimDistricts"
               [value]="district.id"
@@ -70,8 +69,7 @@ declare var L: any;
             [value]="selectedKaiserslauternDistrict"
             (change)="onDistrictChange($event, 'kaiserslautern')"
           >
-            <!-- <option value="">Wählen Sie ein Stadtbezirk</option> -->
-            <option value="gesamt">Gesamt</option>
+            <option value="">Wählen Sie ein Stadtbezirk</option>
             <option
               *ngFor="let district of kaiserslauternDistricts"
               [value]="district.id"
@@ -113,7 +111,7 @@ declare var L: any;
       .maps-container {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 40px;
+        gap: 30px;
         min-height: 1000px;
         align-items: start;
       }
@@ -138,7 +136,7 @@ declare var L: any;
       .map-header {
         padding: 20px 20px 10px 20px;
         display: flex;
-        gap: 40px;
+        gap: 30px;
       }
 
       .map-header h3 {
@@ -343,8 +341,8 @@ export class MapComponent implements OnInit, OnDestroy {
   private geoJsonLoaded = { mannheim: false, kaiserslautern: false };
 
   // Tracking ausgewählter Bezirke für Dropdown-Synchronisation
-  selectedMannheimDistrict: string = '';
-  selectedKaiserslauternDistrict: string = '';
+  selectedMannheimDistrict: string = 'gesamt';
+  selectedKaiserslauternDistrict: string = 'gesamt';
 
   mannheimDistricts: District[] = [];
   kaiserslauternDistricts: District[] = [];
@@ -642,55 +640,55 @@ export class MapComponent implements OnInit, OnDestroy {
     }).addTo(this.mapKaiserslautern);
 
     this.loadGeoJsonData();
-this.mapMannheim.on('click', (e: any) => {
-  // Prüfe ob auf leeren Bereich (nicht auf Polygon) geklickt wurde
-  if (!e.originalEvent.target.classList.contains('leaflet-interactive')) {
-    this.selectedMannheimDistrict = 'gesamt';
-    this.resetAllDistrictsVisibility('mannheim');
-  }
-});
+    this.mapMannheim.on('click', (e: any) => {
+      // Prüfe ob auf leeren Bereich (nicht auf Polygon) geklickt wurde
+      if (!e.originalEvent.target.classList.contains('leaflet-interactive')) {
+        this.selectedMannheimDistrict = 'gesamt';
+        this.resetAllDistrictsVisibility('mannheim');
+      }
+    });
 
-this.mapKaiserslautern.on('click', (e: any) => {
-  // Prüfe ob auf leeren Bereich (nicht auf Polygon) geklickt wurde
-  if (!e.originalEvent.target.classList.contains('leaflet-interactive')) {
-    this.selectedKaiserslauternDistrict = 'gesamt';
-    this.resetAllDistrictsVisibility('kaiserslautern');
-  }
-});
-  }
-
-  private addCirclesForCity(cityName: string) {
-    const districts =
-      cityName === 'Mannheim'
-        ? this.mannheimDistricts
-        : this.kaiserslauternDistricts;
-    const map =
-      cityName === 'Mannheim' ? this.mapMannheim : this.mapKaiserslautern;
-
-    districts.forEach((district) => {
-      const circle = L.circle(district.coordinates, {
-        color: '#ffffff',
-        fillColor: district.color,
-        fillOpacity: 0.8,
-        radius: 800,
-        weight: 2,
-      }).addTo(map);
-
-      const popupContent = `
-        <div class="district-popup">
-          <h4>${district.name}</h4>
-        </div>
-      `;
-
-      circle.bindPopup(popupContent);
-      circle.on('click', () => {
-        this.selectDistrict(
-          district,
-          cityName === 'Mannheim' ? 'mannheim' : 'kaiserslautern'
-        );
-      });
+    this.mapKaiserslautern.on('click', (e: any) => {
+      // Prüfe ob auf leeren Bereich (nicht auf Polygon) geklickt wurde
+      if (!e.originalEvent.target.classList.contains('leaflet-interactive')) {
+        this.selectedKaiserslauternDistrict = 'gesamt';
+        this.resetAllDistrictsVisibility('kaiserslautern');
+      }
     });
   }
+
+  // private addCirclesForCity(cityName: string) {
+  //   const districts =
+  //     cityName === 'Mannheim'
+  //       ? this.mannheimDistricts
+  //       : this.kaiserslauternDistricts;
+  //   const map =
+  //     cityName === 'Mannheim' ? this.mapMannheim : this.mapKaiserslautern;
+
+  //   districts.forEach((district) => {
+  //     const circle = L.circle(district.coordinates, {
+  //       color: '#ffffff',
+  //       fillColor: district.color,
+  //       fillOpacity: 0.8,
+  //       radius: 800,
+  //       weight: 2,
+  //     }).addTo(map);
+
+  //     const popupContent = `
+  //       <div class="district-popup">
+  //         <h4>${district.name}</h4>
+  //       </div>
+  //     `;
+
+  //     circle.bindPopup(popupContent);
+  //     circle.on('click', () => {
+  //       this.selectDistrict(
+  //         district,
+  //         cityName === 'Mannheim' ? 'mannheim' : 'kaiserslautern'
+  //       );
+  //     });
+  //   });
+  // }
 
   private loadGeoJsonData() {
     // Kaiserslautern GeoJSON
@@ -706,7 +704,7 @@ this.mapKaiserslautern.on('click', (e: any) => {
       error: (error) => {
         console.error('Fehler beim Laden der Kaiserslautern GeoJSON:', error);
         this.geoJsonLoaded.kaiserslautern = false;
-        this.addCirclesForCity('Kaiserslautern');
+       // this.addCirclesForCity('Kaiserslautern');
       },
     });
 
@@ -719,7 +717,7 @@ this.mapKaiserslautern.on('click', (e: any) => {
       error: (error) => {
         console.warn('Mannheim GeoJSON nicht gefunden:', error);
         this.geoJsonLoaded.mannheim = false;
-        this.addCirclesForCity('Mannheim');
+       // this.addCirclesForCity('Mannheim');
       },
     });
   }
@@ -768,7 +766,7 @@ this.mapKaiserslautern.on('click', (e: any) => {
       'Grübentälchen/Volkspark': 2,
       Betzenberg: 4,
       'Lämmchesberg/Uniwohnstadt': 5,
-      'Bännjerrück/Karl-Pfaff-S.`': 3,
+      'Bännjerrück/Karl-Pfaff-S.': 3,
       'Kaiserslautern-West': 4,
     };
 
@@ -937,72 +935,5 @@ this.mapKaiserslautern.on('click', (e: any) => {
 
     const normalizedDistrictName = normalize(districtName);
     return districts.find((d) => normalize(d.name) === normalizedDistrictName);
-  }
-
-  private addFacilitiesToMaps() {
-    const facilityIcons = {
-      kita: { color: '#28a745', symbol: '🏠' },
-      grundschule: { color: '#007bff', symbol: '🏫' },
-      kinderarzt: { color: '#dc3545', symbol: '⚕️' },
-      spielplatz: { color: '#ffc107', symbol: '🛝' },
-    };
-
-    // Mannheim Einrichtungen
-    this.getMannheimFacilities().forEach((facility) => {
-      const icon = facilityIcons[facility.type];
-      const marker = L.marker(facility.coordinates, {
-        icon: L.divIcon({
-          html: `<div style="background: ${icon.color}; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">${icon.symbol}</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          className: 'custom-marker',
-        }),
-      }).addTo(this.mapMannheim);
-
-      const popupContent = `
-        <div class="facility-popup">
-          <h5>${facility.name}</h5>
-          <div class="facility-type">${this.getFacilityTypeLabel(
-            facility.type
-          )}</div>
-        </div>
-      `;
-
-      marker.bindPopup(popupContent);
-    });
-
-    // Kaiserslautern Einrichtungen
-    this.getKaiserslauternFacilities().forEach((facility) => {
-      const icon = facilityIcons[facility.type];
-      const marker = L.marker(facility.coordinates, {
-        icon: L.divIcon({
-          html: `<div style="background: ${icon.color}; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">${icon.symbol}</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          className: 'custom-marker',
-        }),
-      }).addTo(this.mapKaiserslautern);
-
-      const popupContent = `
-        <div class="facility-popup">
-          <h5>${facility.name}</h5>
-          <div class="facility-type">${this.getFacilityTypeLabel(
-            facility.type
-          )}</div>
-        </div>
-      `;
-
-      marker.bindPopup(popupContent);
-    });
-  }
-
-  private getFacilityTypeLabel(type: string): string {
-    const labels = {
-      kita: 'Kindertagesstätte',
-      grundschule: 'Grundschule',
-      kinderarzt: 'Kinderarzt',
-      spielplatz: 'Spielplatz',
-    };
-    return labels[type as keyof typeof labels] || type;
   }
 }

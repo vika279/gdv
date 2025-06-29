@@ -52,7 +52,7 @@ interface ChartData {
   template: `
     <div class="cards-container">
       <h3 class="cards-title">{{ getChartTitle() }}</h3>
-
+<!-- {{getChartData()| json}} -->
       <!-- Bar Chart Section - immer anzeigen -->
       <div class="chart-section">
         <div class="chart-container">
@@ -133,10 +133,11 @@ interface ChartData {
   styles: [
     `
       .cards-container {
-        width: 100%;
-        background: white;
+
         border-radius: 12px;
-        padding: 20px;
+        padding-left: 4rem;
+        padding-top: 1rem;
+
       }
 
       .cards-title {
@@ -180,7 +181,7 @@ interface ChartData {
       }
 
       .chart-label {
-        min-width: 100px;
+        min-width: 120px;
         font-size: 0.9rem;
         font-weight: 500;
         color: #666;
@@ -202,7 +203,7 @@ interface ChartData {
 
       .bar-background {
         position: relative;
-        width: 300px; /* Fixierte Breite für alle Balken */
+        width: 25rem; /* Fixierte Breite für alle Balken */
         height: 25px;
         background: #f1f3f4;
         border-radius: 12px;
@@ -254,10 +255,8 @@ interface ChartData {
       /* Legend */
       .legend {
         display: flex;
-        justify-content: center;
         gap: 15px;
-        margin-top: 20px;
-        padding: 15px;
+        margin-top: 2rem;
         border-radius: 8px;
       }
 
@@ -399,7 +398,11 @@ export class ComparisonTableComponent implements OnInit, OnChanges {
     kinderaerzte: 0.6
   };
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log("##Mannheim",this.mannheimDistrict);
+    console.log(this.displayMannheimDistrict);
+        console.log(this.getMannheimMetrics());
+  }
 
   ngOnChanges(changes: SimpleChanges) {}
 
@@ -555,7 +558,7 @@ export class ComparisonTableComponent implements OnInit, OnChanges {
       },
       {
         field: 'kitas',
-        label: 'Kitas',
+        label: 'Kitaplätze',
         mannheimAvg: this.mannheimAverages.kitas,
         kaiserslauternAvg: this.kaiserslauternAverages.kitas
       },
@@ -567,7 +570,7 @@ export class ComparisonTableComponent implements OnInit, OnChanges {
       },
       {
         field: 'grundschulen',
-        label: 'Grundschulen',
+        label: 'Grundschulplätze',
         mannheimAvg: this.mannheimAverages.grundschulen,
         kaiserslauternAvg: this.kaiserslauternAverages.grundschulen
       },

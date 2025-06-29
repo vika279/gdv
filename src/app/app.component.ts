@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MapComponent } from './map/map.component';
 import { RadarChartComponent } from './radar-chart/radar-chart.component';
 import { ComparisonTableComponent } from './comparison-table/comparison-table.component';
-import { ComparisonCardsComponent } from "./comparison-cards/comparison-cards.component";
+import { ComparisonCardsComponent } from './comparison-cards/comparison-cards.component';
 
 export interface District {
   id: string;
@@ -48,21 +48,20 @@ export interface Facility {
     MapComponent,
     RadarChartComponent,
     ComparisonTableComponent,
-    ComparisonCardsComponent
-],
+    ComparisonCardsComponent,
+  ],
   template: `
     <div class="app-container">
       <header class="header">
         <!-- <h1>Kinderfreundlichkeits-Vergleich: Mannheim vs. Kaiserslautern</h1>
         <p class="subtitle">Interaktive Analyse kindgerechter Infrastruktur für Kinder im Alter von 0-10 Jahren</p> -->
       </header>
-      <!-- <div class="comparison-section" *ngIf="selectedMannheim && selectedKaiserslautern"> -->
 
       <div class="comparison-content">
         <!-- Radar Chart -->
         <div class="chart-container">
           <h2>Detailvergleich</h2>
-          <h3>Indikator-Vergleich</h3>
+          <!-- <h3>Indikator-Vergleich</h3> -->
           <app-radar-chart
             [mannheimDistrict]="selectedMannheim"
             [kaiserslauternDistrict]="selectedKaiserslautern"
@@ -72,10 +71,6 @@ export interface Facility {
 
         <!-- Vergleichstabelle -->
         <div class="table-container">
-    <!--      <app-comparison-cards
-            [mannheimDistrict]="selectedMannheim"
-            [kaiserslauternDistrict]="selectedKaiserslautern"
-         ></app-comparison-cards> -->
           <app-comparison-table
             [mannheimDistrict]="selectedMannheim"
             [kaiserslauternDistrict]="selectedKaiserslautern"
@@ -97,29 +92,11 @@ export interface Facility {
           </app-map>
         </div>
         <app-comparison-cards
- [mannheimDistrict]="selectedMannheim"
-            [kaiserslauternDistrict]="selectedKaiserslautern">
-</app-comparison-cards>
-
-        <!-- Auswahlstatus -->
-        <!-- <div class="selection-status" *ngIf="selectedMannheim || selectedKaiserslautern"> -->
-        <!-- <div class="selected-districts">
-          <div class="selected-district mannheim" *ngIf="selectedMannheim">
-            <strong>Mannheim:</strong> {{ selectedMannheim.name }}
-            <span class="index">Index: {{ selectedMannheim.index }}/5</span>
-          </div>
-          <div
-            class="selected-district kaiserslautern"
-            *ngIf="selectedKaiserslautern"
-          >
-            <strong>Kaiserslautern:</strong> {{ selectedKaiserslautern.name }}
-            <span class="index"
-              >Index: {{ selectedKaiserslautern.index }}/5</span
-            >
-          </div>
-        </div> -->
+          [mannheimDistrict]="selectedMannheim"
+          [kaiserslauternDistrict]="selectedKaiserslautern"
+        >
+        </app-comparison-cards>
       </div>
-
 
       <!-- Loading indicator -->
       <div *ngIf="isLoading" class="loading">
@@ -131,38 +108,35 @@ export interface Facility {
         <p>{{ errorMessage }}</p>
       </div>
     </div>
-    <!-- </div> -->
   `,
   styles: [
     `
       .app-container {
         display: flex;
-        // height: 100vh;
-        // gap: 20px;
-        // padding: 20px;
-        // box-sizing: border-box;
       }
 
       .comparison-content {
         flex: 1; /* Takes 1/3 of the width */
-        min-width: 350px;
-         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        min-width: 300px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
         display: flex;
         flex-direction: column;
-      //  padding-left: 30px;
-          // border-right: 1px solid gray;
-          .chart-container{
-            margin-bottom: 7rem;
-
+        margin-right: 30px;
+        .chart-container {
+          margin-bottom: 3rem;
+          h2{
+            margin-left: 60px;
           }
+        }
       }
 
       .main-content {
-        flex: 3; /* Takes 2/3 of the width */
+        flex: 2.5;
         display: flex;
         flex-direction: column;
         gap: 20px;
-        min-width: 600px;
+        min-width: 500px;
       }
 
       .maps-section {
@@ -201,24 +175,6 @@ export interface Facility {
         align-items: center;
         transition: all 0.3s ease;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-
-      .selected-district.mannheim {
-        background: linear-gradient(
-          135deg,
-          rgba(102, 126, 234, 0.1),
-          rgba(118, 75, 162, 0.1)
-        );
-        border-left: 4px solid #667eea;
-      }
-
-      .selected-district.kaiserslautern {
-        background: linear-gradient(
-          135deg,
-          rgba(240, 147, 251, 0.1),
-          rgba(245, 87, 108, 0.1)
-        );
-        border-left: 4px solid #f093fb;
       }
 
       .index {
@@ -301,7 +257,7 @@ export class AppComponent implements OnInit {
   private readonly districtCoordinates: { [key: string]: [number, number] } = {
     // Kaiserslautern districts
     Betzenberg: [49.4386, 7.7589],
-    'Bännjerrück/Karl-Pfaff-Siedlung': [49.45, 7.74],
+    'Bännjerrück/Karl-Pfaff-S.': [49.45, 7.74],
     Dansenberg: [49.47, 7.73],
     Einsiedlerhof: [49.42, 7.78],
     Erfenbach: [49.46, 7.8],
@@ -364,8 +320,10 @@ export class AppComponent implements OnInit {
     // Here you would typically use a CSV parsing library like Papa Parse
     // For now, I'll provide a manual parsing approach based on your data
     const csvText = `Stadt;Stadtbezirk;Anzahl_Spielplätze;Spielplätze_pro_100;Index_Spielplätze;Anzahl_Kinderärzte;Kinderärzte_pro_100;Index_Kinderärzte;Grundschule_plätze;Grundschulen_pro_100;Index_Grundschule;Kita_Plätze;Kitas_pro_100;Index_Kitas;gesamt_Einwohner;0-6;%0-6;6 bis 10;% 6 bis 10;0-10;%0-10;Index_%0-10;Index_gesamt;AVG
+Mannheim;Gesamt;23,11764706;1,422941176;2,346470588;2,176470588;0,128823529;2,074705882;613,1176471;88,71352941;;525,5294118;49;2,365294118;19332,17647;1165,235294;5,998235294;681,4117647;3,572941176;1846,647059;9,570588235;3,167058824;2,622352941;2,513529412
+Kaiserslautern;Gesamt;8,888888889;2,230555556;2,530555556;0,333333333;0,046666667;1,433888889;168,7222222;87,67611111;;189,2;69,56888889;2,658333333;5644,277778;264,0555556;4,78;191;3,531111111;455,0555556;8,310555556;2,512777778;2,467222222;2,240555556
 Kaiserslautern;Betzenberg;8;1,72;2,09;2;0,43;5;156;73,58;2,12;181;71,83;2,71;5096;252;4,95;212;4,16;464;9,11;2,93;3,61;2,98
-Kaiserslautern;Bännjerrück\/Karl-Pfaff-S.;13;3,86;3,94;0;0;1;370;262,41;5;150;76,53;2,82;5050;196;3,88;141;2,79;337;6,67;1,66;3,93;3,19
+Kaiserslautern;Bännjerrück/Karl-Pfaff-S.;13;3,86;3,94;0;0;1;370;262,41;5;150;76,53;2,82;5050;196;3,88;141;2,79;337;6,67;1,66;3,93;3,19
 Kaiserslautern;Dansenberg;7;3,26;3,42;0;0;1;90;111,11;2,69;97;72,39;2,73;2428;134;5,52;81;3,34;215;8,86;2,8;2,81;2,46
 Kaiserslautern;Einsiedlerhof;5;4,67;4,64;0;0;1;0;0;1;70;116,67;3,78;1315;60;4,56;47;3,57;107;8,14;2,42;3,04;2,61
 Kaiserslautern;Erfenbach;2;0,81;1,3;0;0;1;141;122,61;2,87;108;81,2;2,94;2746;133;4,84;115;4,19;248;9,03;2,89;2,14;2,03
@@ -388,8 +346,8 @@ Mannheim;Innenstadt/Jungbusch;14;0,73;1,41;4;0,21;2,75;724;112,42;2,71;749;59,3;
 Mannheim;Käfertal;51;1,15;1,98;2;0,04;1,33;1651;107,63;2,64;986;33,84;1,33;33957;2914;8,58;1534;4,52;4448;13,1;5;1,87;2,14
 Mannheim;Lindenhof;10;0,86;1,58;2;0,17;2,42;366;98,39;2,5;346;43,41;1,99;13724;797;5,81;372;2,71;1169;8,52;2,62;2,39;2,4
 Mannheim;Neckarau;35;1,29;2,17;4;0,15;2,25;825;81,12;2,24;608;35,98;1,48;30599;1690;5,52;1017;3,32;2707;8,85;2,79;2,05;2,23
-Mannheim;Neckarstadt-Ost;30;1,61;2,6;7;0,38;4,17;165;24,09;1,37;1035;87,71;5;35171;2007;5,71;1234;3,51;3241;9,21;2,98;3,99;3,19
-Mannheim;Neckarstadt-West;14;0,43;1;0;0;1;1706;138,25;3,11;641;31,94;1,2;19939;1180;5,92;685;3,44;1865;9,35;3,05;1,69;2,05
+Mannheim;Neckarstadt-Ost;30;1,61;2,6;7;0,38;4,17;561;24,09;1,37;1035;87,71;5;35171;2007;5,71;1234;3,51;3241;9,21;2,98;3,99;3,19
+Mannheim;Neckarstadt-West;14;0,43;1;0;0;1;1310;138,25;3,11;641;31,94;1,2;19939;1180;5,92;685;3,44;1865;9,35;3,05;1,69;2,05
 Mannheim;Neuostheim/Neuhermsheim;10;1,45;2,38;0;0;1;253;93,7;2,43;358;85,65;4,86;7232;418;5,78;270;3,73;688;9,51;3,14;3,44;2,92
 Mannheim;Rheinau;27;1,08;1,88;2;0,08;1,67;875;91,24;2,39;633;41,26;1,84;25317;1534;6,06;959;3,79;2493;9,85;3,31;1,97;2,19
 Mannheim;Sandhofen;13;0,99;1,76;1;0,08;1,67;414;78,26;2,19;228;28,93;1;14107;788;5,59;529;3,75;1317;9,34;3,05;1,24;1,83
@@ -399,8 +357,7 @@ Mannheim;Seckenheim;20;1,16;1,99;2;0,12;2;458;67,35;2,03;470;45,15;2,1;15940;104
 Mannheim;Vogelstang;31;2,37;3,63;1;0,08;1,67;434;89,48;2,36;401;48,67;2,34;12601;824;6,54;485;3,85;1309;10,39;3,59;3,06;2,73
 Mannheim;Waldhof;30;1,03;1,81;1;0,03;1,25;613;56,08;1,85;697;38,79;1,67;25423;1797;7,07;1093;4,3;2890;11,37;4,1;1;1,71
 Mannheim;Wallstadt;23;3,38;5;2;0,29;3,42;254;95,13;2,45;231;55,93;2,84;7746;413;5,33;267;3,45;680;8,78;2,76;5;3,69
-Mannheim;Gesamt;23,11764706;1,422941176;2,346470588;2,176470588;0,128823529;2,074705882;613,1176471;88,71352941;;525,5294118;49;2,365294118;19332,17647;1165,235294;5,998235294;681,4117647;3,572941176;1846,647059;9,570588235;3,167058824;2,622352941;2,513529412
-Kaiserslautern;Gesamt;8,888888889;2,230555556;2,530555556;0,333333333;0,046666667;1,433888889;168,7222222;87,67611111;;189,2;69,56888889;2,658333333;5644,277778;264,0555556;4,78;191;3,531111111;455,0555556;8,310555556;2,512777778;2,467222222;2,240555556
+
 `;
 
     const lines = csvText.trim().split('\n');
@@ -426,7 +383,6 @@ Kaiserslautern;Gesamt;8,888888889;2,230555556;2,530555556;0,333333333;0,04666666
 
       data.push(row);
     }
-
     return data;
   }
 
