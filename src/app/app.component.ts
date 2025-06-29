@@ -144,6 +144,7 @@ export interface Facility {
         background: white;
         border-radius: 12px;
         // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       }
 
       .maps-section h2 {
@@ -292,6 +293,7 @@ export class AppComponent implements OnInit {
     Seckenheim: [49.455, 8.575],
     Vogelstang: [49.515, 8.46],
     Waldhof: [49.52, 8.455],
+    Wallstadt: [49.495, 8.445],
     Wallstadt: [49.495, 8.445],
   };
 
