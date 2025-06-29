@@ -30,7 +30,7 @@ declare var L: any;
             [value]="selectedMannheimDistrict"
             (change)="onDistrictChange($event, 'mannheim')"
           >
-            <option value="">Wählen Sie ein Stadtbezirk</option>
+            <option value="">Gesamt</option>
             <option
               *ngFor="let district of mannheimDistricts"
               [value]="district.id"
@@ -69,7 +69,7 @@ declare var L: any;
             [value]="selectedKaiserslauternDistrict"
             (change)="onDistrictChange($event, 'kaiserslautern')"
           >
-            <option value="">Wählen Sie ein Stadtbezirk</option>
+            <option value="">Gesamt</option>
             <option
               *ngFor="let district of kaiserslauternDistricts"
               [value]="district.id"
@@ -294,23 +294,27 @@ declare var L: any;
       /* Polygon-Styles */
       :host ::ng-deep .district-polygon {
         transition: all 0.2s ease;
+        z-index: 1;
       }
 
       :host ::ng-deep .district-polygon:hover {
         fill-opacity: 0.9 !important;
         stroke-width: 3 !important;
+        z-index: 2;
       }
 
       /* Transparenz-Styles für nicht-ausgewählte Bezirke */
       :host ::ng-deep .district-polygon-faded {
         fill-opacity: 0.3 !important;
         transition: all 0.3s ease;
+        z-index: 1;
       }
 
       :host ::ng-deep .district-polygon-selected {
         fill-opacity: 0.9 !important;
         stroke-width: 3 !important;
         transition: all 0.3s ease;
+        z-index: 999 !important;
       }
 
       /* Custom Marker Styles */
@@ -341,8 +345,8 @@ export class MapComponent implements OnInit, OnDestroy {
   private geoJsonLoaded = { mannheim: false, kaiserslautern: false };
 
   // Tracking ausgewählter Bezirke für Dropdown-Synchronisation
-  selectedMannheimDistrict: string = 'gesamt';
-  selectedKaiserslauternDistrict: string = 'gesamt';
+  selectedMannheimDistrict: string = '';
+  selectedKaiserslauternDistrict: string = '';
 
   mannheimDistricts: District[] = [];
   kaiserslauternDistricts: District[] = [];
@@ -379,6 +383,17 @@ export class MapComponent implements OnInit, OnDestroy {
       (d) => d.city === 'Kaiserslautern'
     );
 
+    // Gesamtwerte bei Initialisierung setzen
+    const mannheimGesamt = this.districts.find(d => d.city === 'Mannheim' && d.name === 'Gesamt');
+    const kaiserslauternGesamt = this.districts.find(d => d.city === 'Kaiserslautern' && d.name === 'Gesamt');
+
+    if (mannheimGesamt) {
+      this.districtSelected.emit(mannheimGesamt);
+    }
+    if (kaiserslauternGesamt) {
+      this.districtSelected.emit(kaiserslauternGesamt);
+    }
+
     if (this.isClient) {
       this.loadLeaflet();
     }
@@ -396,33 +411,31 @@ export class MapComponent implements OnInit, OnDestroy {
   onDistrictChange(event: any, city: string) {
     const districtId = event.target.value;
 
-    // ÄNDERUNG: Verwende event.target.selectedOptions[0].text anstatt districtId
-    if (districtId === 'gesamt') {
+    if (districtId === '') {
       this.resetAllDistrictsVisibility(city);
       if (city === 'mannheim') {
-        this.selectedMannheimDistrict = 'gesamt';
+        this.selectedMannheimDistrict = '';
+        const mannheimGesamt = this.districts.find(d => d.city === 'Mannheim' && d.name === 'Gesamt');
+        if (mannheimGesamt) {
+          this.districtSelected.emit(mannheimGesamt);
+        }
       } else {
-        this.selectedKaiserslauternDistrict = 'gesamt';
+        this.selectedKaiserslauternDistrict = '';
+        const kaiserslauternGesamt = this.districts.find(d => d.city === 'Kaiserslautern' && d.name === 'Gesamt');
+        if (kaiserslauternGesamt) {
+          this.districtSelected.emit(kaiserslauternGesamt);
+        }
       }
-    } else if (districtId) {
-      const districts =
-        city === 'mannheim'
-          ? this.mannheimDistricts
-          : this.kaiserslauternDistricts;
+    } else {
+      const districts = city === 'mannheim' ? this.mannheimDistricts : this.kaiserslauternDistricts;
       const selectedDistrict = districts.find((d) => d.id === districtId);
 
       if (selectedDistrict) {
         this.selectDistrict(selectedDistrict, city);
       }
-    } else {
-      this.resetAllDistrictsVisibility(city);
-      if (city === 'mannheim') {
-        this.selectedMannheimDistrict = '';
-      } else {
-        this.selectedKaiserslauternDistrict = '';
-      }
     }
   }
+
   getCurrentMannheimRating(): number {
     if (
       this.selectedMannheimDistrict &&
@@ -482,18 +495,21 @@ export class MapComponent implements OnInit, OnDestroy {
 
         if (matchingDistrict) {
           if (matchingDistrict.id === selectedDistrictId) {
-            // Ausgewählter Bezirk - normal sichtbar
+            // Ausgewählter Bezirk - normal sichtbar mit dunkelrotem Rand
             featureLayer.setStyle({
               fillOpacity: 0.9,
               weight: 3,
               className: 'district-polygon-selected',
+              color: 'rgb(145, 29, 34)'
             });
+            featureLayer.bringToFront();
           } else {
-            // Andere Bezirke - transparent
+            // Andere Bezirke - transparent mit weißem Rand
             featureLayer.setStyle({
               fillOpacity: 0.3,
               weight: 1,
               className: 'district-polygon-faded',
+              color: '#ffffff'
             });
           }
         }
@@ -512,18 +528,21 @@ export class MapComponent implements OnInit, OnDestroy {
 
         if (matchingDistrict) {
           if (matchingDistrict.id === selectedDistrictId) {
-            // Ausgewählter Bezirk - normal sichtbar
+            // Ausgewählter Bezirk - normal sichtbar mit dunkelblauem Rand
             featureLayer.setStyle({
               fillOpacity: 0.9,
               weight: 3,
               className: 'district-polygon-selected',
+              color: 'rgb(26, 54, 93)'
             });
+            featureLayer.bringToFront();
           } else {
-            // Andere Bezirke - transparent
+            // Andere Bezirke - transparent mit weißem Rand
             featureLayer.setStyle({
               fillOpacity: 0.3,
               weight: 1,
               className: 'district-polygon-faded',
+              color: '#ffffff'
             });
           }
         }
@@ -539,6 +558,7 @@ export class MapComponent implements OnInit, OnDestroy {
           fillOpacity: 0.8,
           weight: 2,
           className: 'district-polygon',
+          color: '#ffffff'
         });
       });
     } else if (city === 'kaiserslautern' && this.kaiserslauternGeoJsonLayer) {
@@ -547,6 +567,7 @@ export class MapComponent implements OnInit, OnDestroy {
           fillOpacity: 0.8,
           weight: 2,
           className: 'district-polygon',
+          color: '#ffffff'
         });
       });
     }
@@ -643,16 +664,26 @@ export class MapComponent implements OnInit, OnDestroy {
     this.mapMannheim.on('click', (e: any) => {
       // Prüfe ob auf leeren Bereich (nicht auf Polygon) geklickt wurde
       if (!e.originalEvent.target.classList.contains('leaflet-interactive')) {
-        this.selectedMannheimDistrict = 'gesamt';
+        this.selectedMannheimDistrict = '';
         this.resetAllDistrictsVisibility('mannheim');
+        // Gesamtdaten für Mannheim emittieren
+        const mannheimGesamt = this.districts.find(d => d.city === 'Mannheim' && d.name === 'Gesamt');
+        if (mannheimGesamt) {
+          this.districtSelected.emit(mannheimGesamt);
+        }
       }
     });
 
     this.mapKaiserslautern.on('click', (e: any) => {
       // Prüfe ob auf leeren Bereich (nicht auf Polygon) geklickt wurde
       if (!e.originalEvent.target.classList.contains('leaflet-interactive')) {
-        this.selectedKaiserslauternDistrict = 'gesamt';
+        this.selectedKaiserslauternDistrict = '';
         this.resetAllDistrictsVisibility('kaiserslautern');
+        // Gesamtdaten für Kaiserslautern emittieren
+        const kaiserslauternGesamt = this.districts.find(d => d.city === 'Kaiserslautern' && d.name === 'Gesamt');
+        if (kaiserslauternGesamt) {
+          this.districtSelected.emit(kaiserslauternGesamt);
+        }
       }
     });
   }
@@ -879,7 +910,7 @@ export class MapComponent implements OnInit, OnDestroy {
             layer.setStyle({
               fillOpacity: isSelected ? 0.9 : hasSelection ? 0.3 : 0.8,
               weight: isSelected ? 3 : 2,
-              color: '#ffffff',
+              color: isSelected ? (cityName === 'Mannheim' ? 'rgb(145, 29, 34)' : 'rgb(26, 54, 93)') : '#ffffff',
             });
 
             // Tooltip schließen
