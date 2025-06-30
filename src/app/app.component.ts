@@ -113,55 +113,64 @@ export interface Facility {
     `
       .app-container {
         display: flex;
+        width: 100vw;
+        min-height: 100vh;
+        gap: 30px;
+        padding: 1.5rem;
+        box-sizing: border-box;
       }
 
       .comparison-content {
-        flex: 1; /* Takes 1/3 of the width */
-        min-width: 300px;
+        flex: 1;
+        width: 100%;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         border-radius: 12px;
         display: flex;
         flex-direction: column;
-        margin-right: 30px;
         .chart-container {
           margin-bottom: 2rem;
-          h2{
-            margin-left: 60px;
+          width: 100%;
+          h2 {
+            margin-left: clamp(30px, 4vw, 60px);
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
           }
         }
       }
 
       .main-content {
-        flex: 2.5;
+        flex: 2;
+        width: 100%;
         display: flex;
         flex-direction: column;
         gap: 20px;
-        min-width: 500px;
       }
 
       .maps-section {
         flex: 1;
+        width: 100%;
+        height: 60vh;
+        min-height: 400px;
         background: white;
         border-radius: 12px;
-        // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
 
-      .maps-section h2 {
-        margin: 0 0 10px 0;
-        color: #333;
-        font-size: 1.5rem;
-      }
+        ::ng-deep {
+          .map-container {
+            width: 100%;
+            height: 100%;
+          }
 
-      .maps-section .info {
-        margin: 0 0 20px 0;
-        color: #666;
-        font-size: 0.95rem;
+          .leaflet-container {
+            width: 100%;
+            height: 100%;
+          }
+        }
       }
 
       .selected-districts {
         display: flex;
         gap: 15px;
         flex-wrap: wrap;
+        width: 100%;
       }
 
       .selected-district {
@@ -175,6 +184,7 @@ export interface Facility {
         align-items: center;
         transition: all 0.3s ease;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 100%;
       }
 
       .index {
@@ -199,48 +209,54 @@ export interface Facility {
         .app-container {
           flex-direction: column;
           height: auto;
+          padding: 1rem;
+          overflow-x: hidden;
         }
 
-        .radar-section {
-          flex: none;
-          min-width: auto;
-          order: 2;
-        }
-
+        .comparison-content,
         .main-content {
-          flex: none;
-          min-width: auto;
-          order: 1;
+          width: 100%;
+          margin: 0;
         }
 
-        .selected-districts {
-          flex-direction: column;
-        }
-
-        .selected-district {
-          min-width: auto;
+        .maps-section {
+          height: 50vh;
+          min-height: 350px;
         }
       }
 
       @media (max-width: 768px) {
         .app-container {
-          padding: 10px;
-          gap: 10px;
+          padding: 0.5rem;
+          gap: 15px;
         }
 
-        .radar-section,
         .maps-section {
-          padding: 15px;
-        }
-
-        .selected-districts {
-          gap: 10px;
+          height: 40vh;
+          min-height: 300px;
         }
 
         .selected-district {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 8px;
+          min-width: 200px;
+          padding: 12px 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .app-container {
+          padding: 0.25rem;
+          gap: 10px;
+        }
+
+        .maps-section {
+          height: 35vh;
+          min-height: 250px;
+        }
+
+        .selected-district {
+          min-width: 150px;
+          padding: 10px;
+          font-size: 0.9rem;
         }
       }
     `,

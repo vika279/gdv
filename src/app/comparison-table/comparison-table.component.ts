@@ -270,7 +270,7 @@ interface ChartData {
       }
 
       .bar-value {
-        min-width: 50px;
+        min-width: 40px;
         text-align: left;
         font-size: 0.9rem;
         font-weight: 600;

@@ -112,14 +112,16 @@ declare var L: any;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 30px;
-        min-height: 1000px;
-        align-items: start;
+        height: calc(100vh - 200px);
+        width: 100%;
+        align-items: stretch;
       }
 
       @media (max-width: 1024px) {
         .maps-container {
           grid-template-columns: 1fr;
-          gap: 30px;
+          gap: 20px;
+          height: auto;
         }
       }
 
@@ -137,41 +139,65 @@ declare var L: any;
         padding: 20px 20px 10px 20px;
         display: flex;
         gap: 30px;
+        align-items: center;
       }
 
       .map-header h3 {
-        margin: 0 0 15px 0;
+        margin: 0;
         color: #333;
         font-weight: 700;
-        font-size: 1.5rem;
+        font-size: clamp(1.2rem, 2vw, 1.5rem);
+        white-space: nowrap;
       }
 
       .district-select {
         width: 100%;
-        padding: 10px 15px;
+        padding: 8px 15px;
         border: 2px solid #e9ecef;
         border-radius: 8px;
         background: white;
-        font-size: 1.3rem;
+        font-size: clamp(0.9rem, 1.5vw, 1.3rem);
         color: #666;
         cursor: pointer;
         transition: border-color 0.2s;
       }
 
-      .district-select:focus {
-        outline: none;
-        border-color: #007bff;
-      }
-
       .map-container {
         position: relative;
-        height: 500px;
         flex: 1;
+        width: 100%;
+        min-height: 400px;
       }
 
       .map {
         height: 100%;
         width: 100%;
+      }
+
+      @media (max-width: 768px) {
+        .map-container {
+          min-height: 350px;
+        }
+
+        .map-header {
+          padding: 15px 15px 8px 15px;
+          gap: 15px;
+        }
+
+        .district-select {
+          padding: 6px 12px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .map-container {
+          min-height: 300px;
+        }
+
+        .map-header {
+          padding: 10px 10px 6px 10px;
+          gap: 10px;
+        }
       }
 
       .map-overlay {
@@ -344,6 +370,48 @@ export class MapComponent implements OnInit, OnDestroy {
   private kaiserslauternGeoJsonLayer: any;
   private geoJsonLoaded = { mannheim: false, kaiserslautern: false };
 
+  // Heatmap-Daten als Klassenvariablen
+  private mannheimHeatmapData: { [key: string]: number } = {
+    'Innenstadt/Jungbusch': 2,
+    'Neckarstadt-West': 3,
+    Lindenhof: 2,
+    Schönau: 3,
+    Sandhofen: 2,
+    Neckarau: 2,
+    Waldhof: 2,
+    'Neckarstadt-Ost': 2,
+    'Schwetzingerstadt/Oststadt': 4,
+    'Neuostheim/Neuhermsheim': 3,
+    Rheinau: 2,
+    Käfertal: 3,
+    Vogelstang: 3,
+    Feudenheim: 2,
+    Seckenheim: 3,
+    Wallstadt: 4,
+    Friedrichsfeld: 2,
+  };
+
+  private kaiserslauternHeatmapData: { [key: string]: number } = {
+    Betzenberg: 4,
+    'Bännjerrück/Karl-Pfaff-S.': 4,
+    Dansenberg: 3,
+    Einsiedlerhof: 3,
+    Erfenbach: 2,
+    Erlenbach: 2,
+    'Erzhütten/Wiesenthalerhof': 2,
+    'Grübentälchen/Volkspark': 2,
+    Hohenecken: 4,
+    'Innenstadt Nord/Kaiserberg': 1,
+    'Innenstadt-Ost': 3,
+    'Innenstadt-Südwest': 2,
+    'Innenstadt West/Kotten': 1,
+    'Kaiserslautern-West': 1,
+    'Lämmchesberg/Uniwohnstadt': 5,
+    Morlautern: 3,
+    Mölschbach: 2,
+    Siegelbach: 2,
+  };
+
   // Tracking ausgewählter Bezirke für Dropdown-Synchronisation
   selectedMannheimDistrict: string = '';
   selectedKaiserslauternDistrict: string = '';
@@ -406,6 +474,8 @@ export class MapComponent implements OnInit, OnDestroy {
     if (this.mapKaiserslautern) {
       this.mapKaiserslautern.remove();
     }
+    // Entferne den Resize-Event-Listener
+    window.removeEventListener('resize', this.handleResize.bind(this));
   }
 
   onDistrictChange(event: any, city: string) {
@@ -445,9 +515,13 @@ export class MapComponent implements OnInit, OnDestroy {
       const district = this.mannheimDistricts.find(
         (d) => d.id === this.selectedMannheimDistrict
       );
-      return district ? district.index : this.getMannheimAverageRating();
+      if (district) {
+        return this.mannheimHeatmapData[district.name] || 0;
+      }
     }
-    return this.getMannheimAverageRating();
+    // Durchschnitt der Heatmap-Werte berechnen
+    const values = Object.values(this.mannheimHeatmapData);
+    return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
   }
 
   getCurrentKaiserslauternRating(): number {
@@ -459,9 +533,13 @@ export class MapComponent implements OnInit, OnDestroy {
       const district = this.kaiserslauternDistricts.find(
         (d) => d.id === this.selectedKaiserslauternDistrict
       );
-      return district ? district.index : this.getKaiserslauternAverageRating();
+      if (district) {
+        return this.kaiserslauternHeatmapData[district.name] || 0;
+      }
     }
-    return this.getKaiserslauternAverageRating();
+    // Durchschnitt der Heatmap-Werte berechnen
+    const values = Object.values(this.kaiserslauternHeatmapData);
+    return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
   }
 
   private selectDistrict(district: District, city: string) {
@@ -573,24 +651,6 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  getMannheimAverageRating(): number {
-    if (this.mannheimDistricts.length === 0) return 0;
-    const sum = this.mannheimDistricts.reduce(
-      (acc, district) => acc + district.index,
-      0
-    );
-    return Math.round(sum / this.mannheimDistricts.length);
-  }
-
-  getKaiserslauternAverageRating(): number {
-    if (this.kaiserslauternDistricts.length === 0) return 0;
-    const sum = this.kaiserslauternDistricts.reduce(
-      (acc, district) => acc + district.index,
-      0
-    );
-    return Math.round(sum / this.kaiserslauternDistricts.length);
-  }
-
   getMannheimFacilities(): Facility[] {
     return this.facilities.filter((f) =>
       this.mannheimDistricts.some((d) => d.id === f.district)
@@ -634,26 +694,16 @@ export class MapComponent implements OnInit, OnDestroy {
       attributionControl: false,
     };
 
-    // MANNHEIM - Mit größeren Bounds (zeigt mehr Gebiet = kleiner wirkend)
+    // MANNHEIM
     this.mapMannheim = L.map('map-mannheim', staticMapOptions);
 
-    // Größerer Bereich um Mannheim (macht Karte "kleiner")
-    const mannheimBounds = L.latLngBounds(
-      [49.43, 8.42], // Südwest
-      [49.54, 8.56] // Nordost
-    );
-    this.mapMannheim.fitBounds(mannheimBounds);
+    // KAISERSLAUTERN
+    this.mapKaiserslautern = L.map('map-kaiserslautern', staticMapOptions);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       opacity: 0.0,
     }).addTo(this.mapMannheim);
-
-    // KAISERSLAUTERN - Normaler Zoom
-    this.mapKaiserslautern = L.map(
-      'map-kaiserslautern',
-      staticMapOptions
-    ).setView([49.4447, 7.7689], 12);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -661,12 +711,12 @@ export class MapComponent implements OnInit, OnDestroy {
     }).addTo(this.mapKaiserslautern);
 
     this.loadGeoJsonData();
+
+    // Event-Listener für Klicks außerhalb der Polygone
     this.mapMannheim.on('click', (e: any) => {
-      // Prüfe ob auf leeren Bereich (nicht auf Polygon) geklickt wurde
       if (!e.originalEvent.target.classList.contains('leaflet-interactive')) {
         this.selectedMannheimDistrict = '';
         this.resetAllDistrictsVisibility('mannheim');
-        // Gesamtdaten für Mannheim emittieren
         const mannheimGesamt = this.districts.find(d => d.city === 'Mannheim' && d.name === 'Gesamt');
         if (mannheimGesamt) {
           this.districtSelected.emit(mannheimGesamt);
@@ -675,51 +725,38 @@ export class MapComponent implements OnInit, OnDestroy {
     });
 
     this.mapKaiserslautern.on('click', (e: any) => {
-      // Prüfe ob auf leeren Bereich (nicht auf Polygon) geklickt wurde
       if (!e.originalEvent.target.classList.contains('leaflet-interactive')) {
         this.selectedKaiserslauternDistrict = '';
         this.resetAllDistrictsVisibility('kaiserslautern');
-        // Gesamtdaten für Kaiserslautern emittieren
         const kaiserslauternGesamt = this.districts.find(d => d.city === 'Kaiserslautern' && d.name === 'Gesamt');
         if (kaiserslauternGesamt) {
           this.districtSelected.emit(kaiserslauternGesamt);
         }
       }
     });
+
+    // Fenster-Resize-Event-Handler
+    window.addEventListener('resize', this.handleResize.bind(this));
   }
 
-  // private addCirclesForCity(cityName: string) {
-  //   const districts =
-  //     cityName === 'Mannheim'
-  //       ? this.mannheimDistricts
-  //       : this.kaiserslauternDistricts;
-  //   const map =
-  //     cityName === 'Mannheim' ? this.mapMannheim : this.mapKaiserslautern;
+  private handleResize() {
+    if (this.mapMannheim && this.mapKaiserslautern) {
+      setTimeout(() => {
+        this.mapMannheim.invalidateSize();
+        this.mapKaiserslautern.invalidateSize();
 
-  //   districts.forEach((district) => {
-  //     const circle = L.circle(district.coordinates, {
-  //       color: '#ffffff',
-  //       fillColor: district.color,
-  //       fillOpacity: 0.8,
-  //       radius: 800,
-  //       weight: 2,
-  //     }).addTo(map);
+        if (this.mannheimGeoJsonLayer) {
+          const mannheimBounds = this.mannheimGeoJsonLayer.getBounds();
+          this.mapMannheim.fitBounds(mannheimBounds, { padding: [20, 20] });
+        }
 
-  //     const popupContent = `
-  //       <div class="district-popup">
-  //         <h4>${district.name}</h4>
-  //       </div>
-  //     `;
-
-  //     circle.bindPopup(popupContent);
-  //     circle.on('click', () => {
-  //       this.selectDistrict(
-  //         district,
-  //         cityName === 'Mannheim' ? 'mannheim' : 'kaiserslautern'
-  //       );
-  //     });
-  //   });
-  // }
+        if (this.kaiserslauternGeoJsonLayer) {
+          const kaiserslauternBounds = this.kaiserslauternGeoJsonLayer.getBounds();
+          this.mapKaiserslautern.fitBounds(kaiserslauternBounds, { padding: [20, 20] });
+        }
+      }, 100);
+    }
+  }
 
   private loadGeoJsonData() {
     // Kaiserslautern GeoJSON
@@ -759,48 +796,6 @@ export class MapComponent implements OnInit, OnDestroy {
         ? this.mannheimDistricts
         : this.kaiserslauternDistricts;
 
-    // Heatmap-Daten
-    const mannheimHeatmapData: { [key: string]: number } = {
-      'Innenstadt/Jungbusch': 2,
-      'Neckarstadt-West': 3,
-      Lindenhof: 2,
-      Schönau: 3,
-      Sandhofen: 2,
-      Neckarau: 2,
-      Waldhof: 4,
-      'Neckarstadt-Ost': 2,
-      'Schwetzingerstadt/Oststadt': 4,
-      'Neuostheim/Neuhermsheim': 3,
-      Rheinau: 2,
-      Käfertal: 3,
-      Vogelstang: 3,
-      Feudenheim: 2,
-      Seckenheim: 3,
-      Wallstadt: 4,
-      Friedrichsfeld: 2,
-    };
-
-    const kaiserslauternHeatmapData: { [key: string]: number } = {
-      Betzenberg: 4,
-      'Bännjerrück/Karl-Pfaff-S.': 4,
-      Dansenberg: 3,
-      Einsiedlerhof: 3,
-      Erfenbach: 2,
-      Erlenbach: 2,
-      'Erzhütten/Wiesenthalerhof': 2,
-      'Grübentälchen/Volkspark': 2,
-      Hohenecken: 4,
-      'Innenstadt Nord/Kaiserberg': 1,
-      'Innenstadt-Ost': 3,
-      'Innenstadt-Südwest': 2,
-      'Innenstadt West/Kotten': 1,
-      'Kaiserslautern-West': 1,
-      'Lämmchesberg/Uniwohnstadt': 5,
-      Morlautern: 3,
-      Mölschbach: 2,
-      Siegelbach: 2,
-    };
-
     const getHeatmapColor = (value: number, cityName: string): string => {
       if (cityName === 'Mannheim') {
         const colorMap: { [key: number]: string } = {
@@ -830,13 +825,13 @@ export class MapComponent implements OnInit, OnDestroy {
         let fillColor: string;
 
         if (cityName === 'Mannheim') {
-          const heatmapValue = mannheimHeatmapData[districtName] || 0;
+          const heatmapValue = this.mannheimHeatmapData[districtName] || 0;
           fillColor =
             heatmapValue > 0
               ? getHeatmapColor(heatmapValue, cityName)
               : '#cccccc';
         } else if (cityName === 'Kaiserslautern') {
-          const heatmapValue = kaiserslauternHeatmapData[districtName] || 0;
+          const heatmapValue = this.kaiserslauternHeatmapData[districtName] || 0;
           fillColor =
             heatmapValue > 0
               ? getHeatmapColor(heatmapValue, cityName)
@@ -920,19 +915,16 @@ export class MapComponent implements OnInit, OnDestroy {
       },
     }).addTo(map);
 
-    // Store the layer reference for the specific city
+    // Store the layer reference
     if (cityName === 'Mannheim') {
       this.mannheimGeoJsonLayer = geoJsonLayer;
     } else {
       this.kaiserslauternGeoJsonLayer = geoJsonLayer;
     }
 
-    // Karte statisch anpassen - kein Zoom
-    if (geoJsonData.features && geoJsonData.features.length > 0) {
-      const bounds = geoJsonLayer.getBounds();
-      const center = bounds.getCenter();
-      map.setView(center, map.getZoom()); // Behält aktuelle Zoomstufe bei
-    }
+    // Fit bounds with padding
+    const bounds = geoJsonLayer.getBounds();
+    map.fitBounds(bounds, { padding: [20, 20] });
   }
 
   private getDistrictNameFromFeature(feature: any, cityName: string): string {
