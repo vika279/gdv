@@ -643,8 +643,8 @@ export class ComparisonCardsComponent implements OnInit, OnChanges {
 
   formatValue(value: number, unit: string): string {
     if (unit === '%') {
-      return `${value.toFixed(1)}%`;
+      return `${Math.round(value)}%`;
     }
-    return value.toFixed(1);
+    return Math.round(value).toString();
   }
 }
