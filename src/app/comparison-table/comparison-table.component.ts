@@ -154,13 +154,13 @@ interface ChartData {
   styles: [
     `
       .cards-container {
-        border-radius: 12px;
+        border-radius: 0.75rem;
         padding-left: 4rem;
         padding-top: 1rem;
       }
 
       .cards-title {
-        margin: 0 0 20px 0;
+        margin: 3rem 0 1.25rem 0;
         color: #333;
         font-size: 1.2rem;
         font-weight: 600;
@@ -171,7 +171,7 @@ interface ChartData {
         color: #666;
         font-weight: 500;
         text-align: center;
-        margin-top: 5px;
+        margin-top: 0.3125rem;
       }
 
       .mannheim-value {
@@ -184,23 +184,23 @@ interface ChartData {
 
       /* Chart Styles */
       .chart-section {
-        padding-top: 20px;
+        padding-top: 1.25rem;
       }
 
       .chart-container {
         display: flex;
         flex-direction: column;
-        gap: 30px; /* Größerer Abstand zwischen Kategorien */
+        gap: 1.875rem; /* Größerer Abstand zwischen Kategorien */
       }
 
       .chart-item {
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 1.25rem;
       }
 
       .chart-label {
-        min-width: 120px;
+        min-width: 7.5rem;
         font-size: 0.9rem;
         font-weight: 500;
         color: #666;
@@ -210,28 +210,28 @@ interface ChartData {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 4px; /* Kleinerer Abstand zwischen den beiden Städten */
-        max-width: 600px; /* Fixierte maximale Breite */
+        gap: 0.25rem; /* Kleinerer Abstand zwischen den beiden Städten */
+        max-width: 37.5rem; /* Fixierte maximale Breite */
       }
 
       .bar-container {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 0.625rem;
       }
 
       .bar-background {
         position: relative;
         width: 25rem; /* Fixierte Breite für alle Balken */
-        height: 25px;
+        height: 1.5625rem;
         background: #f1f3f4;
-        border-radius: 12px;
+        border-radius: 0.75rem;
         overflow: hidden;
       }
 
       .bar-fill {
         height: 100%;
-        border-radius: 12px;
+        border-radius: 0.75rem;
         transition: width 0.3s ease;
       }
 
@@ -256,28 +256,28 @@ interface ChartData {
       }
 
       .kaiserslautern-avg-line {
-        background: #1a237e;
+        background: rgb(48, 189, 71);
       }
 
       .both-cities-avg-line {
-        background: #757575;
+        background:rgb(173, 173, 173);
       }
 
       .values-container {
         display: flex;
-        gap: 10px;
-        min-width: 150px;
+        gap: 0.625rem;
+        min-width: 9.375rem;
       }
 
       .bar-value {
-        min-width: 40px;
+        min-width: 2.5rem;
         text-align: left;
         font-size: 0.9rem;
         font-weight: 600;
       }
 
       .avg-value {
-        min-width: 50px;
+        min-width: 3.125rem;
         text-align: left;
         font-size: 0.9rem;
         font-weight: 500;
@@ -288,11 +288,11 @@ interface ChartData {
       }
 
       .kaiserslautern-avg-value {
-        color: #1a237e;
+        color:rgb(18, 165, 42);
       }
 
       .both-cities-avg-value {
-        color: #757575;
+        color:rgb(163, 163, 163);
       }
 
       /* Legend */
@@ -300,25 +300,25 @@ interface ChartData {
         display: flex;
         flex-direction: column;
         margin-top: 2rem;
-        border-radius: 8px;
+        border-radius: 0.5rem;
       }
 
       .legend-averages {
         display: flex;
-        gap: 15px;
+        gap: 0.9375rem;
         align-items: center;
       }
 
       .legend-item {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 0.5rem;
         font-size: 0.85rem;
         color: #666;
       }
 
       .legend-color {
-        width: 20px;
+        width: 1.25rem;
         height: 3px;
         border-radius: 2px;
       }
@@ -331,13 +331,11 @@ interface ChartData {
       }
 
       .value-asterisk {
-        margin-left: 2px;
+        margin-left: 0.125rem;
         font-size: 0.8rem;
       }
 
-
-
-      @media (max-width: 968px) {
+      @media (max-width: 60.5rem) { /* 968px */
         .chart-item {
           flex-direction: column;
           align-items: stretch;
@@ -346,7 +344,7 @@ interface ChartData {
         .chart-label {
           min-width: auto;
           text-align: center;
-          margin-bottom: 10px;
+          margin-bottom: 0.625rem;
         }
 
         .chart-bars {
@@ -354,30 +352,30 @@ interface ChartData {
         }
 
         .bar-background {
-          width: 250px; /* Kleinere fixierte Breite für mobile Geräte */
+          width: 15.625rem; /* Kleinere fixierte Breite für mobile Geräte */
         }
 
         .values-container {
-          min-width: 120px;
+          min-width: 7.5rem;
         }
 
         .legend {
           flex-direction: column;
-          gap: 10px;
+          gap: 0.625rem;
         }
       }
 
-      @media (max-width: 576px) {
+      @media (max-width: 36rem) { /* 576px */
         .bar-label {
           font-size: 0.8rem;
         }
 
         .bar-background {
-          width: 200px; /* Noch kleinere Breite für sehr kleine Bildschirme */
+          width: 12.5rem; /* Noch kleinere Breite für sehr kleine Bildschirme */
         }
 
         .values-container {
-          min-width: 100px;
+          min-width: 6.25rem;
           flex-direction: column;
         }
 

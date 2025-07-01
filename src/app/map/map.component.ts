@@ -111,24 +111,25 @@ declare var L: any;
       .maps-container {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 30px;
-        height: calc(100vh - 200px);
+        gap: 1.875rem;
+        height: calc(100vh - 12.5rem);
         width: 100%;
         align-items: stretch;
+        padding-bottom: 0.5rem;
       }
 
-      @media (max-width: 1024px) {
+      @media (max-width: 64rem) { /* 1024px */
         .maps-container {
           grid-template-columns: 1fr;
-          gap: 20px;
+          gap: 1.25rem;
           height: auto;
         }
       }
 
       .map-wrapper {
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
         overflow: hidden;
         height: 100%;
         display: flex;
@@ -136,9 +137,9 @@ declare var L: any;
       }
 
       .map-header {
-        padding: 20px 20px 10px 20px;
+        padding: 1.25rem 1.25rem 0.625rem 1.25rem;
         display: flex;
-        gap: 30px;
+        gap: 1.875rem;
         align-items: center;
       }
 
@@ -152,9 +153,9 @@ declare var L: any;
 
       .district-select {
         width: 100%;
-        padding: 8px 15px;
+        padding: 0.5rem 0.9375rem;
         border: 2px solid #e9ecef;
-        border-radius: 8px;
+        border-radius: 0.5rem;
         background: white;
         font-size: clamp(0.9rem, 1.5vw, 1.3rem);
         color: #666;
@@ -166,7 +167,7 @@ declare var L: any;
         position: relative;
         flex: 1;
         width: 100%;
-        min-height: 400px;
+        min-height: 16rem;
       }
 
       .map {
@@ -174,46 +175,46 @@ declare var L: any;
         width: 100%;
       }
 
-      @media (max-width: 768px) {
+      @media (max-width: 48rem) { /* 768px */
         .map-container {
-          min-height: 350px;
+          min-height: 14rem;
         }
 
         .map-header {
-          padding: 15px 15px 8px 15px;
-          gap: 15px;
+          padding: 0.9375rem 0.9375rem 0.5rem 0.9375rem;
+          gap: 0.9375rem;
         }
 
         .district-select {
-          padding: 6px 12px;
+          padding: 0.375rem 0.75rem;
         }
       }
 
-      @media (max-width: 480px) {
+      @media (max-width: 30rem) { /* 480px */
         .map-container {
-          min-height: 300px;
+          min-height: 12rem;
         }
 
         .map-header {
-          padding: 10px 10px 6px 10px;
-          gap: 10px;
+          padding: 0.625rem 0.625rem 0.375rem 0.625rem;
+          gap: 0.625rem;
         }
       }
 
       .map-overlay {
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 1.25rem;
+        right: 1.25rem;
         z-index: 1000;
       }
 
       .rating-badge {
         background: white;
-        padding: 16px 14px;
-        border-radius: 40px;
+        padding: 1rem 0.875rem;
+        border-radius: 2.5rem;
         font-weight: bold;
         font-size: 1.1rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
         color: white;
       }
 
@@ -227,11 +228,11 @@ declare var L: any;
 
       .legend {
         position: absolute;
-        bottom: 20px;
-        right: 20px;
+        bottom: 0.5rem;
+        right: 0.5rem;
         background: white;
-        padding: 12px;
-        border-radius: 8px;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
         z-index: 1001;
       }
 
@@ -239,14 +240,14 @@ declare var L: any;
         font-weight: 600;
         font-size: 0.8rem;
         color: #333;
-        margin-bottom: 8px;
+        margin-bottom: 0.25rem;
         text-align: left;
       }
 
       .legend-scale {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 0.75rem;
       }
 
       .legend-item {
@@ -258,11 +259,10 @@ declare var L: any;
       }
 
       .legend-color {
-        width: 16px;
-        height: 16px;
-        border-radius: 2px;
-        margin-bottom: 2px;
-        // border: 1px solid rgba(255, 255, 255, 0.3);
+        width: 0.875rem;
+        height: 0.875rem;
+        border-radius: 0.125rem;
+        margin-bottom: 0.125rem;
       }
 
       /* Leaflet Overrides */
@@ -429,7 +429,7 @@ export class MapComponent implements OnInit, OnDestroy {
   ];
 
   kaiserslauternLegend = [
-    { value: 1, color: '#add8e6' },
+    { value: 1, color: '#87cff8' },
     { value: 2, color: '#6bb6ff' },
     { value: 3, color: '#4682b4' },
     { value: 4, color: '#2d5a87' },
@@ -812,7 +812,7 @@ export class MapComponent implements OnInit, OnDestroy {
           4: '#2d5a87',
           3: '#4682b4',
           2: '#6bb6ff',
-          1: '#add8e6',
+          1: '#83c5eb',
         };
         return colorMap[value] || '#zzzzg';
       }

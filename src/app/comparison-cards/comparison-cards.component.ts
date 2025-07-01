@@ -119,15 +119,15 @@ interface ChartData {
       }
 
       .mannheim-section {
-       // border-radius: 12px;
+        border-radius: 12px;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-         padding: 1rem;
+         padding: 0.5rem;
       }
 
       .kaiserslautern-section {
         border-radius: 12px;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-        padding: 1rem;
+        padding: 0.5rem;
       }
 
       .metrics-grid {

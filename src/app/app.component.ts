@@ -115,7 +115,6 @@ export interface Facility {
         display: flex;
         width: 100vw;
         min-height: 100vh;
-        gap: 30px;
         padding: 1.5rem;
         box-sizing: border-box;
       }
@@ -127,18 +126,20 @@ export interface Facility {
         border-radius: 12px;
         display: flex;
         flex-direction: column;
+        margin-right: 30px;
         .chart-container {
           margin-bottom: 2rem;
           width: 100%;
           h2 {
-            margin-left: clamp(30px, 4vw, 60px);
-            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            margin-left: 3rem;
+            font-weight: 700;
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
           }
         }
       }
 
       .main-content {
-        flex: 2;
+        flex: 2.5;
         width: 100%;
         display: flex;
         flex-direction: column;
